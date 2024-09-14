@@ -1,22 +1,12 @@
-export {fix, unfix} from './src/fix.js'
-export type {Fix, HFix} from './src/fix.js'
-export {cata} from './src/schemes.js'
-export type {
-  Algebra,
-  EffectAlgebra,
-  GAlgebra,
-  RAlgebra,
-} from './src/types/fold.js'
-export type {
-  Anamorphism,
-  AnamorphismE,
-  Catamorphism,
-  CatamorphismE,
-  Hylomorphism,
-  HylomorphismE,
-} from './src/types/schemes.js'
-export type {
-  Coalgebra,
-  EffectCoalgebra,
-  RCoalgebra,
-} from './src/types/unfold.js'
+export * from './src/fix.js'
+export type * from './src/fold/folds.js'
+export * from './src/fold/laws.js'
+export * from './src/fold/ops.js'
+export * from './src/fold/schemes.js'
+export * from './src/fold/struct.js'
+export * from './src/fold/tuple.js'
+export type * from './src/laws.js'
+export * from './src/refold/schemes.js'
+export * from './src/unfold/laws.js'
+export * from './src/unfold/schemes.js'
+export type * from './src/unfold/unfolds.js'

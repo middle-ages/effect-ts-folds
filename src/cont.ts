@@ -7,7 +7,7 @@ export const traverseEffect =
   <F extends TypeLambda>(F: TA.Traversable<F>) =>
   <A, B, E = never, R = never>(
     f: (a: A) => EF.Effect<B, E, R>,
-  ): (<Out2 = unknown, Out1 = unknown, In1 = never>(
+  ): (<Out1 = unknown, Out2 = unknown, In1 = never>(
     fa: Kind<F, In1, Out2, Out1, A>,
   ) => EF.Effect<Kind<F, In1, Out2, Out1, B>, E, R>) =>
     F.traverse(getApplicative())(f)
