@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+pnpm clean
+pnpm circular
+pnpm lint
+pnpm test-run
+pnpm build
+
+cp package.json README.md .dev/dist
+cp -r docs/ .dev/dist
+cp ~/.npmrc .dev/dist
+
+cd .dev/dist
+pnpm install
+pnpm publish 
