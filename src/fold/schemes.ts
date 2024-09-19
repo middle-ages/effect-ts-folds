@@ -1,10 +1,10 @@
 import {Covariant as CO, Traversable as TA} from '@effect/typeclass'
 import {Effect as EF, flow, pipe, Tuple as TU} from 'effect'
-import {TypeLambda} from 'effect/HKT'
+import {Kind, TypeLambda} from 'effect/HKT'
 import {fix, Fix, unfix} from '../fix.js'
-import {fanout} from '../pair.js'
+import {fanout, pairWithFirst} from '../pair.js'
 import {hylo, hyloE} from '../refold/schemes.js'
-import {Algebra, EffectAlgebra, RAlgebra} from './folds.js'
+import {Algebra, EffectAlgebra, RAlgebra, ZDist} from './folds.js'
 
 export type Catamorphism = <F extends TypeLambda>(
   F: TA.Traversable<F>,
@@ -28,6 +28,19 @@ export const para =
       ),
       TU.getSecond,
     )
+
+export const zygo =
+  <F extends TypeLambda>(F: CO.Covariant<F> & TA.Traversable<F>) =>
+  <A, B, Out1 = unknown, Out2 = unknown, In1 = never>(
+    f: ZDist<F, A, B, Out1, Out2, In1>,
+    φ: Algebra<F, B, Out1, Out2, In1>,
+  ): ((fa: Fix<F, Out1, Out2, In1>) => A) => {
+    const fold = cata(F)((fab: Kind<F, In1, Out2, Out1, [A, B]>): [A, B] =>
+      pipe(fab, F.map(TU.getSecond), φ, pairWithFirst(f(fab))),
+    )
+
+    return flow(fold, TU.getFirst)
+  }
 
 export const cataE =
   <F extends TypeLambda>(F: TA.Traversable<F>) =>

@@ -6,18 +6,19 @@ Recursion schemes for [effect-ts](https://effect.website/).
 
 1. Folds
     1. Catamorphism
-    2. Catamorphism into an `Effect`
-    3. Paramorphism
+    2. Paramorphism
+    3. Zygomorphism
 2. Unfolds
     1. Anamorphism
-    2. Anamorphism into an `Effect`
-    3. Apomorphism
+    2. Apomorphism
 3. Refolds
     1. hylomorphism
-    2. hylomorphism into an `Effect`
-4. Fuse folds/unfolds/refolds into tuples and structs.
-5. [Stack-safety](tests/consList/stackSafety.spec.ts) using the `effect-ts` `Effect` type as a _continuation monad_.
-6. Tests for all morphisms and combinators, and some
+4. A version of all of the above that is lazy, allows running effects inside the
+   operation, and returns the result wrapped in an `Effect` type.
+5. Fuse folds/unfolds/refolds into tuples and structs.
+6. [Stack-safety](tests/consList/stackSafety.spec.ts) using the `effect-ts`
+   `Effect` type as a _continuation monad_.
+7. Tests for all morphisms and combinators, and some
    [law tests](https://github.com/middle-ages/effect-ts-laws) for
    [folds](src/fold/laws.ts) and [unfolds](src/unfold/laws.ts).
 

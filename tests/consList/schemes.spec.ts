@@ -1,20 +1,23 @@
 import {Array as AR, Effect as EF, pipe} from 'effect'
-import {fix, RAlgebra} from 'effect-ts-folds'
 import {Cons, cons, empty, of, toArray} from './cons.js'
-import {ConsF, ConsFLambda, match} from './consF.js'
+import {ConsF} from './consF.js'
 import {
+  alternateSum,
   consAna,
   consApo,
   consCataE,
   consPara,
+  consZygo,
   countCata,
   countCataE,
   countE,
   countRange,
   countRangeE,
+  flip,
   halves,
   rangeAna,
   rangeAnaE,
+  tails,
   takeUntil,
   unfoldUntil,
 } from './schemes.js'
@@ -58,6 +61,12 @@ describe('consList', () => {
         })
       })
 
+      test('zygo', () => {
+        expect(
+          pipe([1, 2, 3, 4, 5], cons, consZygo(alternateSum, flip)),
+        ).toEqual(1 - 2 + 3 - 4 + 5)
+      })
+
       describe('error effects', () => {
         test('1,2,3 cata error passthrough', () => {
           assert.throws(
@@ -96,11 +105,6 @@ describe('consList', () => {
         })
 
         test('para', () => {
-          const tails: RAlgebra<ConsFLambda, Cons[]> = match(
-            () => [],
-            ([first, tail], head) => [fix([first, head]), ...tail],
-          )
-
           expect(pipe([1, 2, 3, 4], cons, consPara(tails))).toEqual([
             cons([1, 2, 3, 4]),
             cons([2, 3, 4]),

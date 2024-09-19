@@ -9,13 +9,17 @@ import {
   Coalgebra,
   EffectAlgebra,
   EffectCoalgebra,
+  fix,
   hylo,
   hyloE,
   para,
+  RAlgebra,
   RCoalgebra,
   unfix,
+  ZDist,
+  zygo,
 } from 'effect-ts-folds'
-import {constant, constNull} from 'effect/Function'
+import {constant, constNull, constTrue} from 'effect/Function'
 import {TupleOf} from 'effect/Types'
 import {Cons, empty} from './cons.js'
 import {ConsF, ConsFLambda, instances, match} from './consF.js'
@@ -33,10 +37,25 @@ export const [count, sum, product, max]: TupleOf<4, ConsFold> = [
   match(constant(Number.NEGATIVE_INFINITY), NU.max),
 ]
 
-export const [range, halves]: [ConsUnfold, ConsUnfold] = [
+export const [range, halves]: TupleOf<2, ConsUnfold> = [
   n => (n === 0 ? null : [n - 1, n]),
   n => ConsF(n < 1 ? null : [n / 2, n]),
 ]
+
+export const tails: RAlgebra<ConsFLambda, Cons[]> = match(
+  () => [],
+  ([first, tail], head) => [fix([first, head]), ...tail],
+)
+
+export const flip: Algebra<ConsFLambda, boolean> = match(
+  constTrue,
+  (tail, _) => !tail,
+)
+
+export const alternateSum: ZDist<ConsFLambda, number, boolean> = match(
+  constant(0),
+  ([previous, flag], current) => previous + (flag ? 1 : -1) * current,
+)
 
 export const [countE, rangeE]: [ConsFoldE, ConsUnfoldE] = [
   match(pipe(0, EF.succeed, constant), tail =>
@@ -50,12 +69,13 @@ export const [countE, rangeE]: [ConsFoldE, ConsUnfoldE] = [
         : EF.succeed([n - 1, n]),
 ]
 
-export const [consCata, consAna, consHylo, consPara, consApo] = [
+export const [consCata, consAna, consHylo, consPara, consApo, consZygo] = [
   cata(instances),
   ana(instances),
   hylo(instances),
   para(instances),
   apo(instances),
+  zygo(instances),
 ]
 
 export const [countCata, rangeAna, countRange]: [

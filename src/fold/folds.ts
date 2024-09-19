@@ -47,8 +47,8 @@ export type Algebra<
 > = Fold<F, Id, A, Out1, Out2, In1>
 
 /**
- * Same as `Algebra` except the `A` type is replaced with a tuple of
- * `Fix<F>` and `A`. A function of the type:
+ * Same as `Algebra` except the `A` type on the left hand side is replaced with
+ * a tuple of `Fix<F>` and `A`. A function of the type:
  * `(fa: F<I₁, O₂, O₁, [Fix<F, O₁, O₂, I₁>, A]>) ⇒ A`
  * @category fold
  */
@@ -59,6 +59,21 @@ export type RAlgebra<
   Out2 = unknown,
   In1 = never,
 > = Fold<F, ProductTypeLambda<F>, A, Out1, Out2, In1>
+
+/**
+ * Same as `Algebra` except the `A` type on the left side is replaced with a
+ * tuple of `A` and `B`. A function of the type:
+ * `(fa: F<I₁, O₂, O₁, [A, B]>) ⇒ A`
+ * @category fold
+ */
+export type ZDist<
+  F extends TypeLambda,
+  A,
+  B,
+  Out1 = unknown,
+  Out2 = unknown,
+  In1 = never,
+> = Fold<F, TupleWithTypeLambda<B>, A, Out1, Out2, In1>
 
 /**
  * Same as `Algebra` but folds in an effect. A function of the type:
@@ -83,4 +98,8 @@ export interface AlgebraTypeLambda<F extends TypeLambda> extends TypeLambda {
     this['Out2'],
     this['In']
   >
+}
+
+export interface TupleWithTypeLambda<B> extends TypeLambda {
+  readonly type: [this['Target'], B]
 }

@@ -30,3 +30,11 @@ export const pairMap =
  * @pair
  */
 export const dup = <A>(a: A): [A, A] => [a, a]
+
+export const pairWithFirst =
+  <A>(first: A) =>
+  <B>(second: B): [A, B] => [first, second]
+
+export const pairWithSecond =
+  <B>(second: B) =>
+  <A>(first: A): [A, B] => [first, second]
