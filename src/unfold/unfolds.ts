@@ -1,14 +1,30 @@
 import {IdentityTypeLambda as Id} from '@effect/typeclass/data/Identity'
 import {Effect as EF} from 'effect'
 import {Kind, TypeLambda} from 'effect/HKT'
-import {SumTypeLambda} from '../fix.js'
+import {Fix, SumTypeLambda} from '../fix.js'
+
+/**
+ * The return type of all unfolding schemes.
+ * @category unfold
+ */
+export type Unfold<F extends TypeLambda, A, Out1, Out2, In1> = (
+  a: A,
+) => Fix<F, Out1, Out2, In1>
+
+/**
+ * The return type of all schemes that unfold into an effect.
+ * @category unfold
+ */
+export type EffectUnfold<F extends TypeLambda, A, E, R, Out1, Out2, In1> = (
+  a: A,
+) => EF.Effect<Fix<F, Out1, Out2, In1>, E, R>
 
 /**
  * A function of type:
  * `(a: A) ⇒ Outer<I₁, O₂, O₁, Inner<I₁, O₂, O₁, A>>`.
  * @category unfold
  */
-export type Unfold<
+export type Unfolder<
   Outer extends TypeLambda,
   Inner extends TypeLambda,
   A,
@@ -18,10 +34,10 @@ export type Unfold<
 > = (a: A) => Kind<Outer, In1, Out2, Out1, Kind<Inner, In1, Out2, Out1, A>>
 
 /**
- * Same as `Unfold` but unfolds into an effect.
+ * Same as `Unfolder` but unfolds into an effect.
  * @category unfold
  */
-export type EffectUnfold<
+export type EffectUnfolder<
   Outer extends TypeLambda,
   Inner extends TypeLambda,
   A,
@@ -48,7 +64,7 @@ export type Coalgebra<
   Out1 = unknown,
   Out2 = unknown,
   In1 = never,
-> = Unfold<F, Id, A, Out1, Out2, In1>
+> = Unfolder<F, Id, A, Out1, Out2, In1>
 
 /**
  * A function of the type:
@@ -61,7 +77,7 @@ export type RCoalgebra<
   Out1 = unknown,
   Out2 = unknown,
   In1 = never,
-> = Unfold<F, SumTypeLambda<F>, A, Out1, Out2, In1>
+> = Unfolder<F, SumTypeLambda<F>, A, Out1, Out2, In1>
 
 /**
  * Unfold into an effect. A function of the type:
@@ -76,4 +92,4 @@ export type EffectCoalgebra<
   Out1 = unknown,
   Out2 = unknown,
   In1 = never,
-> = EffectUnfold<F, Id, A, E, R, Out1, Out2, In1>
+> = EffectUnfolder<F, Id, A, E, R, Out1, Out2, In1>

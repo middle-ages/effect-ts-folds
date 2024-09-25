@@ -1,14 +1,34 @@
 import {IdentityTypeLambda as Id} from '@effect/typeclass/data/Identity'
 import {Effect as EF} from 'effect'
 import {Kind, TypeLambda} from 'effect/HKT'
-import {ProductTypeLambda} from '../fix.js'
+import {Fix, ProductTypeLambda} from '../fix.js'
+
+/**
+ * The return type of all folding schemes.
+ * @category fold
+ */
+export type Fold<
+  F extends TypeLambda,
+  A,
+  Out1 = unknown,
+  Out2 = unknown,
+  In1 = never,
+> = (fixed: Fix<F, Out1, Out2, In1>) => A
+
+/**
+ * The return type of all schemes that fold into an effect.
+ * @category fold
+ */
+export type EffectFold<F extends TypeLambda, A, E, R, Out1, Out2, In1> = (
+  fixed: Fix<F, Out1, Out2, In1>,
+) => EF.Effect<A, E, R>
 
 /**
  * A function of type:
  * `(fa: Outer<I₁, O₂, O₁, Inner<I₁, O₂, O₁, A>>) ⇒ A`.
  * @category fold
  */
-export type Fold<
+export type Folder<
   Outer extends TypeLambda,
   Inner extends TypeLambda,
   A,
@@ -18,10 +38,10 @@ export type Fold<
 > = (fa: Kind<Outer, In1, Out2, Out1, Kind<Inner, In1, Out2, Out1, A>>) => A
 
 /**
- * Same as `Fold` but folds into an `Effect`.
+ * Same as `Folder` but folds into an `Effect`.
  * @category fold
  */
-export type EffectFold<
+export type EffectFolder<
   Outer extends TypeLambda,
   Inner extends TypeLambda,
   A,
@@ -44,7 +64,7 @@ export type Algebra<
   Out1 = unknown,
   Out2 = unknown,
   In1 = never,
-> = Fold<F, Id, A, Out1, Out2, In1>
+> = Folder<F, Id, A, Out1, Out2, In1>
 
 /**
  * Same as `Algebra` except the `A` type on the left hand side is replaced with
@@ -58,7 +78,7 @@ export type RAlgebra<
   Out1 = unknown,
   Out2 = unknown,
   In1 = never,
-> = Fold<F, ProductTypeLambda<F>, A, Out1, Out2, In1>
+> = Folder<F, ProductTypeLambda<F>, A, Out1, Out2, In1>
 
 /**
  * Same as `Algebra` except the `A` type on the left side is replaced with a
@@ -66,14 +86,29 @@ export type RAlgebra<
  * `(fa: F<I₁, O₂, O₁, [A, B]>) ⇒ A`
  * @category fold
  */
-export type ZDist<
+export type DistLeft<
   F extends TypeLambda,
   A,
   B,
   Out1 = unknown,
   Out2 = unknown,
   In1 = never,
-> = Fold<F, TupleWithTypeLambda<B>, A, Out1, Out2, In1>
+> = Folder<F, TupleWithTypeLambda<B>, A, Out1, Out2, In1>
+
+/**
+ * Same as `Algebra` except the `A` type on the left side is replaced with a
+ * tuple of `B` and `A`. A function of the type:
+ * `(fa: F<I₁, O₂, O₁, [B, A]>) ⇒ A`
+ * @category fold
+ */
+export type DistRight<
+  F extends TypeLambda,
+  A,
+  B,
+  Out1 = unknown,
+  Out2 = unknown,
+  In1 = never,
+> = (fa: Kind<F, In1, Out2, Out1, [B, A]>) => A
 
 /**
  * Same as `Algebra` but folds in an effect. A function of the type:
@@ -88,7 +123,7 @@ export type EffectAlgebra<
   Out1 = unknown,
   Out2 = unknown,
   In1 = never,
-> = EffectFold<F, Id, A, E, R, Out1, Out2, In1>
+> = EffectFolder<F, Id, A, E, R, Out1, Out2, In1>
 
 export interface AlgebraTypeLambda<F extends TypeLambda> extends TypeLambda {
   readonly type: Algebra<

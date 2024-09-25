@@ -7,6 +7,7 @@ import {
   cata,
   cataE,
   Coalgebra,
+  DistLeft,
   EffectAlgebra,
   EffectCoalgebra,
   fix,
@@ -16,7 +17,6 @@ import {
   RAlgebra,
   RCoalgebra,
   unfix,
-  ZDist,
   zygo,
 } from 'effect-ts-folds'
 import {constant, constNull, constTrue} from 'effect/Function'
@@ -52,7 +52,7 @@ export const flip: Algebra<ConsFLambda, boolean> = match(
   (tail, _) => !tail,
 )
 
-export const alternateSum: ZDist<ConsFLambda, number, boolean> = match(
+export const alternateSum: DistLeft<ConsFLambda, number, boolean> = match(
   constant(0),
   ([previous, flag], current) => previous + (flag ? 1 : -1) * current,
 )

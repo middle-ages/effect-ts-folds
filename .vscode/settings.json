@@ -57,6 +57,7 @@
     "vpad",
     "webfont",
     "zygo",
+    "zygomorphism",
     "Zygomorphism"
   ],
   "js/ts.implicitProjectConfig.module": "NodeNext",

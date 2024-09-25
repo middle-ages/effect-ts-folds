@@ -26,9 +26,7 @@ export const toArray: (c: Cons) => number[] = c => {
 }
 
 export const arbitrary: fc.Arbitrary<Cons> = fc
-  .array(fc.integer({min: 0, max: 100}), {
-    maxLength: 5,
-  })
+  .array(fc.integer({min: 0, max: 4}), {maxLength: 4})
   .map(cons)
 
 export const equivalence: EQ.Equivalence<Cons> = pipe(

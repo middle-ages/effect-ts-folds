@@ -17,6 +17,15 @@ export type Unfixed<
   In1 = never,
 > = Kind<F, In1, Out2, Out1, Fix<F, Out1, Out2, In1>>
 
+export interface FixTypeLambda extends TypeLambda {
+  readonly type: Fix<
+    this['Target'] & TypeLambda,
+    this['Out1'],
+    this['Out2'],
+    this['In']
+  >
+}
+
 export const fix: <
   F extends TypeLambda,
   Out1 = unknown,

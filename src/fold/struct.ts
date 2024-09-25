@@ -17,7 +17,7 @@ export const struct =
 
     return <Out1 = unknown, Out2 = unknown, In1 = never>(
       fas: Kind<F, In1, Out2, Out1, ReturnTypes<Out2, Out1, In1>>,
-    ) => {
+    ): ReturnTypes<Out2, Out1, In1> => {
       const result = {} as ReturnTypes<Out2, Out1, In1>
 
       for (const key of Object.keys(struct) as Key[])

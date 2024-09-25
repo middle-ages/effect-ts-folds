@@ -1,16 +1,18 @@
 import {Covariant as CO, Traversable as TA} from '@effect/typeclass'
-import {flow, pipe, Tuple as TU} from 'effect'
+import {Array as AR, flow, pipe, Tuple as TU} from 'effect'
 import {Law, LawSet} from 'effect-ts-laws'
-import {TypeLambda} from 'effect/HKT'
+import {tupled} from 'effect/Function'
+import {Kind, TypeLambda} from 'effect/HKT'
 import fc from 'fast-check'
 import {fix, Fix, unfix, Unfixed} from '../fix.js'
 import {Given} from '../laws.js'
-import {Algebra} from './folds.js'
-import {cata, para} from './schemes.js'
+import {fanout} from '../pair.js'
+import {Fold, RAlgebra} from './folds.js'
+import {cata, Catamorphism, para, Paramorphism, zygo} from './schemes.js'
 
 export const cataLaws =
   <F extends TypeLambda, A>(F: TA.Traversable<F> & CO.Covariant<F>) =>
-  ({equalsF, equalsA, fixed, φ}: Given<F, A>) => {
+  <B>({equalsF, equalsA, fixed, φ}: Given<F, A, B>) => {
     const unfixed: fc.Arbitrary<Unfixed<F>> = fixed.map(unfix),
       cataF = cata(F)
 
@@ -48,7 +50,7 @@ export const cataLaws =
 
 export const paraLaws =
   <F extends TypeLambda>(F: TA.Traversable<F> & CO.Covariant<F>) =>
-  <A>({fixed, equalsA, φ}: Given<F, A>) => {
+  <A, B>({fixed, equalsA, φ}: Given<F, A, B>) => {
     return LawSet()(
       'paramorphism',
 
@@ -63,18 +65,40 @@ export const paraLaws =
     )
   }
 
-const standaloneCata =
-  <F extends TypeLambda>(F: CO.Covariant<F>) =>
-  <A, Out1 = unknown, Out2 = unknown, In1 = never>(
-    φ: Algebra<F, A, Out1, Out2, In1>,
-  ) =>
-  (fixed: Fix<F, Out1, Out2, In1>): A =>
-    pipe(fixed, unfix, F.map(standaloneCata(F)(φ)), φ)
+export const zygoLaws =
+  <F extends TypeLambda>(F: TA.Traversable<F> & CO.Covariant<F>) =>
+  <A>({fixed, equalsF, ralgebra}: Given<F, A, Fix<F>>) => {
+    return LawSet()(
+      'zygomorphism',
 
-const paraBasedCata =
+      Law(
+        'para consistency',
+        'para(φ) = zygo(φ ∘ F.map(Tuple.swap), fix)',
+        fixed,
+        ralgebra,
+      )((fixed, φ) =>
+        pipe(
+          fixed,
+          fanout(para(F)(φ), zygoBasedPara(F)(φ)),
+          tupled(AR.getEquivalence(equalsF)),
+        ),
+      ),
+    )
+  }
+
+const standaloneCata: Catamorphism = F => φ => fixed =>
+  pipe(fixed, unfix, F.map(standaloneCata(F)(φ)), φ)
+
+const paraBasedCata: Catamorphism = F => φ =>
+  para(F)(flow(F.map(TU.getSecond), φ))
+
+export const zygoBasedPara: Paramorphism =
   <F extends TypeLambda>(F: TA.Traversable<F> & CO.Covariant<F>) =>
   <A, Out1 = unknown, Out2 = unknown, In1 = never>(
-    ψ: Algebra<F, A, Out1, Out2, In1>,
-  ) =>
-  (fixed: Fix<F, Out1, Out2, In1>): A =>
-    pipe(fixed, para(F)(flow(F.map(TU.getSecond), ψ)))
+    φ: RAlgebra<F, A, Out1, Out2, In1>,
+  ): Fold<F, A, Out1, Out2, In1> =>
+    zygo(F)(
+      (fa: Kind<F, In1, Out2, Out1, [A, Fix<F, Out1, Out2, In1>]>) =>
+        pipe(fa, F.map(TU.swap), φ),
+      fix,
+    )

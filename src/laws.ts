@@ -5,7 +5,7 @@ import {Fix} from './fix.js'
 import {Algebra, RAlgebra} from './fold/folds.js'
 import {Coalgebra} from './unfold/unfolds.js'
 
-export interface Given<F extends TypeLambda, A> {
+export interface Given<F extends TypeLambda, A, B> {
   equalsF: EQ.Equivalence<Fix<F>>
   equalsA: EQ.Equivalence<A>
   a: fc.Arbitrary<A>
@@ -13,5 +13,5 @@ export interface Given<F extends TypeLambda, A> {
   fixed: fc.Arbitrary<Fix<F>>
   φ: fc.Arbitrary<Algebra<F, A>>
   ψ: fc.Arbitrary<Coalgebra<F, A>>
-  ralgebra: fc.Arbitrary<RAlgebra<F, Fix<F>[]>>
+  ralgebra: fc.Arbitrary<RAlgebra<F, B[]>>
 }
