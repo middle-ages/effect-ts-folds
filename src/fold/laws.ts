@@ -7,6 +7,7 @@ import fc from 'fast-check'
 import {fix, Fix, unfix, Unfixed} from '../fix.js'
 import {Given} from '../laws.js'
 import {fanout} from '../pair.js'
+import {traverseMap} from '../traversable.js'
 import {Catamorphism, Paramorphism, RAlgebra} from './folds.js'
 import {cata, para, zygo} from './schemes.js'
 
@@ -87,18 +88,18 @@ export const zygoLaws =
   }
 
 const standaloneCata: Catamorphism = F => φ => fixed =>
-  pipe(fixed, unfix, F.map(standaloneCata(F)(φ)), φ)
+  pipe(fixed, unfix, traverseMap(F)(standaloneCata(F)(φ)), φ)
 
 const paraBasedCata: Catamorphism = F => φ =>
-  para(F)(flow(F.map(TU.getSecond), φ))
+  para(F)(flow(traverseMap(F)(TU.getSecond), φ))
 
 export const zygoBasedPara: Paramorphism =
-  <F extends TypeLambda>(F: TA.Traversable<F> & CO.Covariant<F>) =>
+  <F extends TypeLambda>(F: TA.Traversable<F>) =>
   <A, Out1 = unknown, Out2 = unknown, In1 = never>(
     φ: RAlgebra<F, A, Out1, Out2, In1>,
   ) =>
     zygo(F)(
       (fa: Kind<F, In1, Out2, Out1, [A, Fix<F, Out1, Out2, In1>]>) =>
-        pipe(fa, F.map(TU.swap), φ),
+        pipe(fa, traverseMap(F)(TU.swap), φ),
       fix,
     )

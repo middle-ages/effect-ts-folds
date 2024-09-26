@@ -55,3 +55,9 @@ export type Anamorphism = <F extends TypeLambda>(
 ) => <A, Out1 = unknown, Out2 = unknown, In1 = never>(
   ψ: Coalgebra<F, A, Out1, Out2, In1>,
 ) => Unfold<F, A, Out1, Out2, In1>
+
+export type Apomorphism = <F extends TypeLambda>(
+  F: TA.Traversable<F>,
+) => <A, Out1 = unknown, Out2 = unknown, In1 = never>(
+  ψ: RCoalgebra<F, A, Out1, Out2, In1>,
+) => Unfold<F, A, Out1, Out2, In1>

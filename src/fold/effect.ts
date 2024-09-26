@@ -1,4 +1,4 @@
-import {Covariant as CO, Traversable as TA} from '@effect/typeclass'
+import {Traversable as TA} from '@effect/typeclass'
 import {IdentityTypeLambda as Id} from '@effect/typeclass/data/Identity'
 import {Effect as EF} from 'effect'
 import {Kind, TypeLambda} from 'effect/HKT'
@@ -61,19 +61,19 @@ export type EffectRAlgebra<
 > = EffectFolder<F, ProductTypeLambda<F>, A, E, R, Out1, Out2, In1>
 
 export type CatamorphismE = <F extends TypeLambda>(
-  F: TA.Traversable<F> & CO.Covariant<F>,
+  F: TA.Traversable<F>,
 ) => <A, E = unknown, R = unknown, Out1 = unknown, Out2 = unknown, In1 = never>(
   φ: EffectAlgebra<F, A, E, R, Out1, Out2, In1>,
 ) => EffectFold<F, A, E, R, Out1, Out2, In1>
 
 export type ParamorphismE = <F extends TypeLambda>(
-  F: TA.Traversable<F> & CO.Covariant<F>,
+  F: TA.Traversable<F>,
 ) => <A, E = never, R = never, Out1 = unknown, Out2 = unknown, In1 = never>(
   φ: EffectRAlgebra<F, A, E, R, Out1, Out2, In1>,
 ) => EffectFold<F, A, E, R, Out1, Out2, In1>
 
 export type ZygomorphismE = <F extends TypeLambda>(
-  F: TA.Traversable<F> & CO.Covariant<F>,
+  F: TA.Traversable<F>,
 ) => <A, B, E = never, R = never, Out1 = unknown, Out2 = unknown, In1 = never>(
   f: DistLeft<F, A, B, Out1, Out2, In1>,
   φ: EffectAlgebra<F, B, E, R, Out1, Out2, In1>,

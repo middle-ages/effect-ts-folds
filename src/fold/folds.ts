@@ -1,4 +1,4 @@
-import {Covariant as CO, Traversable as TA} from '@effect/typeclass'
+import {Traversable as TA} from '@effect/typeclass'
 import {IdentityTypeLambda as Id} from '@effect/typeclass/data/Identity'
 import {Kind, TypeLambda} from 'effect/HKT'
 import {Fix, ProductTypeLambda} from '../fix.js'
@@ -100,19 +100,19 @@ export interface TupleWithTypeLambda<B> extends TypeLambda {
 }
 
 export type Catamorphism = <F extends TypeLambda>(
-  F: TA.Traversable<F> & CO.Covariant<F>,
+  F: TA.Traversable<F>,
 ) => <A, Out1 = unknown, Out2 = unknown, In1 = never>(
   φ: Algebra<F, A, Out1, Out2, In1>,
 ) => Fold<F, A, Out1, Out2, In1>
 
 export type Paramorphism = <F extends TypeLambda>(
-  F: TA.Traversable<F> & CO.Covariant<F>,
+  F: TA.Traversable<F>,
 ) => <A, Out1 = unknown, Out2 = unknown, In1 = never>(
   φ: RAlgebra<F, A, Out1, Out2, In1>,
 ) => Fold<F, A, Out1, Out2, In1>
 
 export type Zygomorphism = <F extends TypeLambda>(
-  F: TA.Traversable<F> & CO.Covariant<F>,
+  F: TA.Traversable<F>,
 ) => <A, B, Out1 = unknown, Out2 = unknown, In1 = never>(
   f: DistLeft<F, A, B, Out1, Out2, In1>,
   φ: Algebra<F, B, Out1, Out2, In1>,

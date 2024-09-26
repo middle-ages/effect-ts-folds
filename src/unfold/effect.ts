@@ -69,3 +69,9 @@ export type AnamorphismE = <F extends TypeLambda>(
 ) => <A, E = never, R = never, Out1 = unknown, Out2 = unknown, In1 = never>(
   ψ: EffectCoalgebra<F, A, E, R, Out1, Out2, In1>,
 ) => EffectUnfold<F, A, E, R, Out1, Out2, In1>
+
+export type ApomorphismE = <F extends TypeLambda>(
+  F: TA.Traversable<F>,
+) => <A, E = never, R = never, Out1 = unknown, Out2 = unknown, In1 = never>(
+  ψ: EffectRCoalgebra<F, A, E, R, Out1, Out2, In1>,
+) => EffectUnfold<F, A, E, R, Out1, Out2, In1>
