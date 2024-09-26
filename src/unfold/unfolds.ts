@@ -1,5 +1,5 @@
+import {Traversable as TA} from '@effect/typeclass'
 import {IdentityTypeLambda as Id} from '@effect/typeclass/data/Identity'
-import {Effect as EF} from 'effect'
 import {Kind, TypeLambda} from 'effect/HKT'
 import {Fix, SumTypeLambda} from '../fix.js'
 
@@ -10,14 +10,6 @@ import {Fix, SumTypeLambda} from '../fix.js'
 export type Unfold<F extends TypeLambda, A, Out1, Out2, In1> = (
   a: A,
 ) => Fix<F, Out1, Out2, In1>
-
-/**
- * The return type of all schemes that unfold into an effect.
- * @category unfold
- */
-export type EffectUnfold<F extends TypeLambda, A, E, R, Out1, Out2, In1> = (
-  a: A,
-) => EF.Effect<Fix<F, Out1, Out2, In1>, E, R>
 
 /**
  * A function of type:
@@ -32,27 +24,6 @@ export type Unfolder<
   Out2,
   In1,
 > = (a: A) => Kind<Outer, In1, Out2, Out1, Kind<Inner, In1, Out2, Out1, A>>
-
-/**
- * Same as `Unfolder` but unfolds into an effect.
- * @category unfold
- */
-export type EffectUnfolder<
-  Outer extends TypeLambda,
-  Inner extends TypeLambda,
-  A,
-  E,
-  R,
-  Out1,
-  Out2,
-  In1,
-> = (
-  a: A,
-) => EF.Effect<
-  Kind<Outer, In1, Out2, Out1, Kind<Inner, In1, Out2, Out1, A>>,
-  E,
-  R
->
 
 /**
  * A function of the type: `(a: A) ⇒ F<I₁, O₂, O₁, A>`.
@@ -79,17 +50,8 @@ export type RCoalgebra<
   In1 = never,
 > = Unfolder<F, SumTypeLambda<F>, A, Out1, Out2, In1>
 
-/**
- * Unfold into an effect. A function of the type:
- * `(a: A) ⇒ Effect<F<I₁, O₂, O₁, A>, E, R>`
- * @category unfold
- */
-export type EffectCoalgebra<
-  F extends TypeLambda,
-  A,
-  E = never,
-  R = never,
-  Out1 = unknown,
-  Out2 = unknown,
-  In1 = never,
-> = EffectUnfolder<F, Id, A, E, R, Out1, Out2, In1>
+export type Anamorphism = <F extends TypeLambda>(
+  F: TA.Traversable<F>,
+) => <A, Out1 = unknown, Out2 = unknown, In1 = never>(
+  ψ: Coalgebra<F, A, Out1, Out2, In1>,
+) => Unfold<F, A, Out1, Out2, In1>

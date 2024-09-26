@@ -1,5 +1,5 @@
+import {Covariant as CO, Traversable as TA} from '@effect/typeclass'
 import {IdentityTypeLambda as Id} from '@effect/typeclass/data/Identity'
-import {Effect as EF} from 'effect'
 import {Kind, TypeLambda} from 'effect/HKT'
 import {Fix, ProductTypeLambda} from '../fix.js'
 
@@ -16,14 +16,6 @@ export type Fold<
 > = (fixed: Fix<F, Out1, Out2, In1>) => A
 
 /**
- * The return type of all schemes that fold into an effect.
- * @category fold
- */
-export type EffectFold<F extends TypeLambda, A, E, R, Out1, Out2, In1> = (
-  fixed: Fix<F, Out1, Out2, In1>,
-) => EF.Effect<A, E, R>
-
-/**
  * A function of type:
  * `(fa: Outer<I₁, O₂, O₁, Inner<I₁, O₂, O₁, A>>) ⇒ A`.
  * @category fold
@@ -36,23 +28,6 @@ export type Folder<
   Out2,
   In1,
 > = (fa: Kind<Outer, In1, Out2, Out1, Kind<Inner, In1, Out2, Out1, A>>) => A
-
-/**
- * Same as `Folder` but folds into an `Effect`.
- * @category fold
- */
-export type EffectFolder<
-  Outer extends TypeLambda,
-  Inner extends TypeLambda,
-  A,
-  E,
-  R,
-  Out1,
-  Out2,
-  In1,
-> = (
-  fa: Kind<Outer, In1, Out2, Out1, Kind<Inner, In1, Out2, Out1, A>>,
-) => EF.Effect<A, E, R>
 
 /**
  * A function of the type: `(fa: F<I₁, O₂, O₁, A>) ⇒ A`.
@@ -110,21 +85,6 @@ export type DistRight<
   In1 = never,
 > = (fa: Kind<F, In1, Out2, Out1, [B, A]>) => A
 
-/**
- * Same as `Algebra` but folds in an effect. A function of the type:
- * `(fa: F<I₁, O₂, O₁, A>) ⇒ Effect<A, E, R>`
- * @category fold
- */
-export type EffectAlgebra<
-  F extends TypeLambda,
-  A,
-  E = never,
-  R = never,
-  Out1 = unknown,
-  Out2 = unknown,
-  In1 = never,
-> = EffectFolder<F, Id, A, E, R, Out1, Out2, In1>
-
 export interface AlgebraTypeLambda<F extends TypeLambda> extends TypeLambda {
   readonly type: Algebra<
     F,
@@ -138,3 +98,22 @@ export interface AlgebraTypeLambda<F extends TypeLambda> extends TypeLambda {
 export interface TupleWithTypeLambda<B> extends TypeLambda {
   readonly type: [this['Target'], B]
 }
+
+export type Catamorphism = <F extends TypeLambda>(
+  F: TA.Traversable<F> & CO.Covariant<F>,
+) => <A, Out1 = unknown, Out2 = unknown, In1 = never>(
+  φ: Algebra<F, A, Out1, Out2, In1>,
+) => Fold<F, A, Out1, Out2, In1>
+
+export type Paramorphism = <F extends TypeLambda>(
+  F: TA.Traversable<F> & CO.Covariant<F>,
+) => <A, Out1 = unknown, Out2 = unknown, In1 = never>(
+  φ: RAlgebra<F, A, Out1, Out2, In1>,
+) => Fold<F, A, Out1, Out2, In1>
+
+export type Zygomorphism = <F extends TypeLambda>(
+  F: TA.Traversable<F> & CO.Covariant<F>,
+) => <A, B, Out1 = unknown, Out2 = unknown, In1 = never>(
+  f: DistLeft<F, A, B, Out1, Out2, In1>,
+  φ: Algebra<F, B, Out1, Out2, In1>,
+) => Fold<F, A, Out1, Out2, In1>
