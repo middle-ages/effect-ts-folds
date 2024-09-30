@@ -7,9 +7,13 @@ import {Fix, SumTypeLambda} from '../fix.js'
  * The return type of all unfolding schemes.
  * @category unfold
  */
-export type Unfold<F extends TypeLambda, A, Out1, Out2, In1> = (
-  a: A,
-) => Fix<F, Out1, Out2, In1>
+export type Unfold<
+  F extends TypeLambda,
+  A,
+  Out1 = unknown,
+  Out2 = unknown,
+  In1 = never,
+> = (a: A) => Fix<F, Out1, Out2, In1>
 
 /**
  * A function of type:

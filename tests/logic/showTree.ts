@@ -1,6 +1,7 @@
 import {Array as AR, pipe, String as STR} from 'effect'
 import {Algebra} from 'effect-ts-folds'
 import {ExprFLambda, matchF} from './exprF.js'
+import {showOp} from './folds.js'
 
 const nSpaces = (n: number) => STR.repeat(n)(' ')
 const prefix = (prefix: string) => (suffix: string) => `${prefix}${suffix}`
@@ -33,12 +34,8 @@ const binOp =
     ]
   }
 
-export const showTreeAlgebra: Algebra<
-  ExprFLambda,
-  AR.NonEmptyArray<string>
-> = matchF(
+export const showTree: Algebra<ExprFLambda, AR.NonEmptyArray<string>> = matchF(
   value => pipe(value ? '⊤' : '⊥', leaf, AR.of),
   ([head, ...tail]) => [branch('¬'), elbow(head), ...pipe(tail, AR.map(space))],
-  (left, right) => binOp('∧')(left, right),
-  (left, right) => binOp('∨')(left, right),
+  isAnd => pipe(isAnd, showOp, binOp),
 )

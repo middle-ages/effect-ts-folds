@@ -12,6 +12,7 @@ import {
   RAlgebra,
   RCoalgebra,
   unfix,
+  Unfold,
   zygo,
 } from 'effect-ts-folds'
 import {constant, constNull, constTrue} from 'effect/Function'
@@ -49,21 +50,6 @@ export const alternateSum: DistLeft<ConsFLambda, number, boolean> = match(
   ([previous, flag], current) => previous + (flag ? 1 : -1) * current,
 )
 
-export const [consCata, consAna, consHylo, consPara, consApo, consZygo] = [
-  cata(instances),
-  ana(instances),
-  hylo(instances),
-  para(instances),
-  apo(instances),
-  zygo(instances),
-]
-
-export const [countCata, rangeAna, countRange]: [
-  (fixed: Cons) => number,
-  (max: number) => Cons,
-  (max: number) => number,
-] = [consCata(count), consAna(range), consHylo(range, count)]
-
 export const unfoldUntil: RCoalgebra<ConsFLambda, [number, Cons]> = ([
   needle,
   haystack,
@@ -80,4 +66,20 @@ export const unfoldUntil: RCoalgebra<ConsFLambda, [number, Cons]> = ([
     ),
   )
 
-export const takeUntil = consApo(unfoldUntil)
+export const takeUntil: Unfold<ConsFLambda, [number, Cons]> = pair =>
+  pipe(pair, consApo(unfoldUntil))
+
+export const [consCata, consAna, consHylo, consPara, consApo, consZygo] = [
+  cata(instances),
+  ana(instances),
+  hylo(instances),
+  para(instances),
+  apo(instances),
+  zygo(instances),
+]
+
+export const [countCata, rangeAna, countRange]: [
+  (fixed: Cons) => number,
+  (max: number) => Cons,
+  (max: number) => number,
+] = [consCata(count), consAna(range), consHylo(range, count)]

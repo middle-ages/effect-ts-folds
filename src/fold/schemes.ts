@@ -28,7 +28,7 @@ export const paraE: ParamorphismE =
       cataE(F)((fa: Kind<F, In1, Out2, Out1, [typeof fixed, A]>) => {
         const [fixed, effect] = pipe(
           fa,
-          fanout(flow(traverseMap(F)(TU.getFirst), fix), φ),
+          fanout(fa => pipe(fa, traverseMap(F)(TU.getFirst), fix), φ),
         )
         return pipe(effect, EF.map(pairWithFirst(fixed)))
       }),

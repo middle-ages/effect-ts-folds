@@ -1,4 +1,4 @@
-import {Covariant as CO, Traversable as TA} from '@effect/typeclass'
+import {Traversable as TA} from '@effect/typeclass'
 import {Array as AR, flow, pipe, Tuple as TU} from 'effect'
 import {Law, LawSet} from 'effect-ts-laws'
 import {tupled} from 'effect/Function'
@@ -12,7 +12,7 @@ import {Catamorphism, Paramorphism, RAlgebra} from './folds.js'
 import {cata, para, zygo} from './schemes.js'
 
 export const cataLaws =
-  <F extends TypeLambda, A>(F: TA.Traversable<F> & CO.Covariant<F>) =>
+  <F extends TypeLambda, A>(F: TA.Traversable<F>) =>
   <B>({equalsF, equalsA, fixed, φ}: Given<F, A, B>) => {
     const unfixed: fc.Arbitrary<Unfixed<F>> = fixed.map(unfix),
       cataF = cata(F)
@@ -34,7 +34,7 @@ export const cataLaws =
       )((unfixed, φ) =>
         equalsA(
           pipe(unfixed, fix, cataF(φ)),
-          pipe(unfixed, F.map(cataF(φ)), φ),
+          pipe(unfixed, traverseMap(F)(cataF(φ)), φ),
         ),
       ),
 
@@ -50,7 +50,7 @@ export const cataLaws =
   }
 
 export const paraLaws =
-  <F extends TypeLambda>(F: TA.Traversable<F> & CO.Covariant<F>) =>
+  <F extends TypeLambda>(F: TA.Traversable<F>) =>
   <A, B>({fixed, equalsA, φ}: Given<F, A, B>) => {
     return LawSet()(
       'paramorphism',
@@ -67,7 +67,7 @@ export const paraLaws =
   }
 
 export const zygoLaws =
-  <F extends TypeLambda>(F: TA.Traversable<F> & CO.Covariant<F>) =>
+  <F extends TypeLambda>(F: TA.Traversable<F>) =>
   <A>({fixed, equalsF, ralgebra}: Given<F, A, Fix<F>>) => {
     return LawSet()(
       'zygomorphism',
