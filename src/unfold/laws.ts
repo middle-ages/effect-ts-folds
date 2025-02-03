@@ -47,15 +47,11 @@ export const apoLaws =
 
 const standaloneAna =
   <F extends TypeLambda>(F: CO.Covariant<F>) =>
-  <A, Out1 = unknown, Out2 = unknown, In1 = never>(
-    ψ: Coalgebra<F, A, Out1, Out2, In1>,
-  ): Unfold<F, A, Out1, Out2, In1> =>
+  <A, E = unknown, R = never>(ψ: Coalgebra<F, A, E, R>): Unfold<F, A, E, R> =>
   a =>
     pipe(a, ψ, F.map(standaloneAna(F)(ψ)), fix)
 
 export const apoBasedAna =
   <F extends TypeLambda>(F: TA.Traversable<F> & CO.Covariant<F>) =>
-  <A, Out1 = unknown, Out2 = unknown, In1 = never>(
-    ψ: Coalgebra<F, A, Out1, Out2, In1>,
-  ): Unfold<F, A, Out1, Out2, In1> =>
-    apo(F)(flow(ψ, F.map<A, EI.Either<A, Fix<F, Out1, Out2, In1>>>(EI.right)))
+  <A, E = unknown, R = never>(ψ: Coalgebra<F, A, E, R>): Unfold<F, A, E, R> =>
+    apo(F)(flow(ψ, F.map<A, EI.Either<A, Fix<F, E, R>>>(EI.right)))

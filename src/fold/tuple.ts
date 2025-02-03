@@ -1,7 +1,7 @@
 import {Covariant as CO} from '@effect/typeclass'
 import {Array as AR, pipe} from 'effect'
 import {TypeLambda} from 'effect/HKT'
-import {fanout} from '../pair.js'
+import {fanout} from '../util.js'
 import {Algebra} from './folds.js'
 
 /**
@@ -10,13 +10,8 @@ import {Algebra} from './folds.js'
  */
 export const zipFolds =
   <F extends TypeLambda>(F: CO.Covariant<F>) =>
-  <
-    const Targets extends AR.NonEmptyArray<unknown>,
-    Out1 = unknown,
-    Out2 = unknown,
-    In1 = never,
-  >(
-    ...[head, ...tail]: TupledAlgebras<F, Targets, Out1, Out2, In1>
+  <const Targets extends AR.NonEmptyArray<unknown>, E = unknown, R = never>(
+    ...[head, ...tail]: TupledAlgebras<F, Targets, E, R>
   ) =>
     pipe(
       tail,
@@ -24,7 +19,7 @@ export const zipFolds =
         unaryTuple(F)(head),
         (previous, current) => appendFold(F)(previous, current) as never,
       ),
-    ) as unknown as Algebra<F, Targets, Out1, Out2, In1>
+    ) as unknown as Algebra<F, Targets, E, R>
 
 /**
  * Append an algebra to an algebra of a tuple.
@@ -32,16 +27,10 @@ export const zipFolds =
  */
 export const appendFold =
   <F extends TypeLambda>(F: CO.Covariant<F>) =>
-  <
-    const Targets extends AR.NonEmptyArray<unknown>,
-    A,
-    Out1 = unknown,
-    Out2 = unknown,
-    In1 = never,
-  >(
-    algebra: Algebra<F, Targets, Out1, Out2, In1>,
-    append: Algebra<F, A, Out1, Out2, In1>,
-  ): Algebra<F, [...Targets, A], Out1, Out2, In1> =>
+  <const Targets extends AR.NonEmptyArray<unknown>, A, E = unknown, R = never>(
+    algebra: Algebra<F, Targets, E, R>,
+    append: Algebra<F, A, E, R>,
+  ): Algebra<F, [...Targets, A], E, R> =>
   f =>
     pipe(
       f,
@@ -58,9 +47,9 @@ export const appendFold =
  */
 export const unaryTuple =
   <F extends TypeLambda>(F: CO.Covariant<F>) =>
-  <A, Out1 = unknown, Out2 = unknown, In1 = never>(
-    fold: Algebra<F, A, Out1, Out2, In1>,
-  ): Algebra<F, [A], Out1, Out2, In1> =>
+  <A, E = unknown, R = never>(
+    fold: Algebra<F, A, E, R>,
+  ): Algebra<F, [A], E, R> =>
   fa => [pipe(fa, F.map(AR.headNonEmpty), fold)]
 
 /**
@@ -70,9 +59,8 @@ export const unaryTuple =
 export type TupledAlgebras<
   F extends TypeLambda,
   Targets extends [unknown, ...unknown[]],
-  Out1 = unknown,
-  Out2 = unknown,
-  In1 = never,
+  R = never,
+  E = unknown,
 > = {
-  [K in keyof Targets]: Algebra<F, Targets[K], Out1, Out2, In1>
+  [K in keyof Targets]: Algebra<F, Targets[K], E, R>
 }

@@ -4,64 +4,56 @@ import {Kind, TypeLambda} from 'effect/HKT'
 import {Fix, SumTypeLambda} from '../fix.js'
 
 /**
- * The return type of all unfolding schemes.
+ * The return type of all unfolding schemes. A function of the type:
+ * `(a: A) ⇒ F<R, E>`
  * @category unfold
  */
-export type Unfold<
-  F extends TypeLambda,
-  A,
-  Out1 = unknown,
-  Out2 = unknown,
-  In1 = never,
-> = (a: A) => Fix<F, Out1, Out2, In1>
+export type Unfold<F extends TypeLambda, A, E = unknown, R = never> = (
+  a: A,
+) => Fix<F, E, R>
 
 /**
  * A function of type:
- * `(a: A) ⇒ Outer<I₁, O₂, O₁, Inner<I₁, O₂, O₁, A>>`.
+ * `(a: A) ⇒ Outer<Inner<A, E, R>, E, R>`.
  * @category unfold
  */
 export type Unfolder<
   Outer extends TypeLambda,
   Inner extends TypeLambda,
   A,
-  Out1,
-  Out2,
-  In1,
-> = (a: A) => Kind<Outer, In1, Out2, Out1, Kind<Inner, In1, Out2, Out1, A>>
+  E = unknown,
+  R = never,
+> = (a: A) => Kind<Outer, R, unknown, E, Kind<Inner, R, unknown, E, A>>
 
 /**
- * A function of the type: `(a: A) ⇒ F<I₁, O₂, O₁, A>`.
+ * A function of the type: `(a: A) ⇒ F<A, E, R>`.
  * @category unfold
  */
 export type Coalgebra<
   F extends TypeLambda,
   A,
-  Out1 = unknown,
-  Out2 = unknown,
-  In1 = never,
-> = Unfolder<F, Id, A, Out1, Out2, In1>
+  E = unknown,
+  R = never,
+> = Unfolder<F, Id, A, E, R>
 
 /**
  * A function of the type:
- * `(a: A) ⇒ F<I₁, O₂, O₁, Either<A, Fix<F, O₁, O₂, I₁>>>`
+ * `(a: A) ⇒ F<Either<A, Fix<F, E, R>>, E, R>`
  * @category unfold
  */
 export type RCoalgebra<
   F extends TypeLambda,
   A,
-  Out1 = unknown,
-  Out2 = unknown,
-  In1 = never,
-> = Unfolder<F, SumTypeLambda<F>, A, Out1, Out2, In1>
+  E = unknown,
+  R = never,
+> = Unfolder<F, SumTypeLambda<F>, A, E, R>
 
 export type Anamorphism = <F extends TypeLambda>(
   F: TA.Traversable<F>,
-) => <A, Out1 = unknown, Out2 = unknown, In1 = never>(
-  ψ: Coalgebra<F, A, Out1, Out2, In1>,
-) => Unfold<F, A, Out1, Out2, In1>
+) => <A, E = unknown, R = never>(ψ: Coalgebra<F, A, E, R>) => Unfold<F, A, E, R>
 
 export type Apomorphism = <F extends TypeLambda>(
   F: TA.Traversable<F>,
-) => <A, Out1 = unknown, Out2 = unknown, In1 = never>(
-  ψ: RCoalgebra<F, A, Out1, Out2, In1>,
-) => Unfold<F, A, Out1, Out2, In1>
+) => <A, E = unknown, R = never>(
+  ψ: RCoalgebra<F, A, E, R>,
+) => Unfold<F, A, E, R>

@@ -3,7 +3,7 @@ import {Algebra} from 'effect-ts-folds'
 import {ExprFLambda, matchF} from './exprF.js'
 import {showOp} from './folds.js'
 
-const nSpaces = (n: number) => STR.repeat(n)(' ')
+const nSpaces = (n: number): string => STR.repeat(n)(' ')
 const prefix = (prefix: string) => (suffix: string) => `${prefix}${suffix}`
 
 const [leaf, branch, elbow, rightT, vertical, space] = [

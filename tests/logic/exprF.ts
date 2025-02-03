@@ -4,15 +4,11 @@ import {
   Traversable as TA,
 } from '@effect/typeclass'
 import {Data, pipe} from 'effect'
-import {
-  arbitraryMonad as AB,
-  LiftArbitrary,
-  LiftEquivalence,
-} from 'effect-ts-laws'
+import {Monad as AB, LiftArbitrary, LiftEquivalence} from 'effect-ts-laws'
 import {dual, flow} from 'effect/Function'
 import {Kind, TypeLambda} from 'effect/HKT'
 import fc from 'fast-check'
-import {Unfixed} from '../../src/fix.js'
+import {Algebra, DistLeft, Fold, RAlgebra, Unfixed} from 'effect-ts-folds'
 
 export type ExprF<A> = Data.TaggedEnum<{
   Value: {value: boolean}
@@ -29,6 +25,11 @@ export interface ExprFDefinition extends Data.TaggedEnum.WithGenerics<2> {
   readonly taggedEnum: ExprF<this['A']>
 }
 
+export type ExprFold<A> = Fold<ExprFLambda, A>
+export type ExprAlgebra<A> = Algebra<ExprFLambda, A>
+export type ExprRAlgebra<A> = RAlgebra<ExprFLambda, A>
+export type ExprLeft<A, B> = DistLeft<ExprFLambda, A, B>
+
 export const {$is, $match, Value, Not, And, Or} =
   Data.taggedEnum<ExprFDefinition>()
 
@@ -37,6 +38,16 @@ export const TrueF: Unfixed<ExprFLambda> = Value({value: true}),
   negationF = <A>(value: A): ExprF<A> => Not({value}),
   disjunctionF = <A>(left: A, right: A): ExprF<A> => Or({left, right}),
   conjunctionF: typeof disjunctionF = (left, right) => And({left, right})
+
+export const getValue = <A>(expr: ExprF<A> & {_tag: 'Value'}): boolean =>
+  expr.value
+
+export const getNegated = <A>(expr: ExprF<A> & {_tag: 'Not'}): A => expr.value
+
+export const getPair = <A>(expr: ExprF<A> & {_tag: 'And' | 'Or'}): [A, A] => [
+  expr.left,
+  expr.right,
+]
 
 export const matchF =
   <A, R>(

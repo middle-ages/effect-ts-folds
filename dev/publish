@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
-
 set -Eeuo pipefail
 
 pnpm clean
 pnpm circular
 pnpm lint
-pnpm test-run
+pnpm test:run
 pnpm build
 
 cp package.json README.md .dev/dist

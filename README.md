@@ -24,8 +24,7 @@ Recursion schemes for [effect-ts](https://effect.website/).
 
 ## Limitations
 
-1. Experimental, brand new, and very limited in variety of morphisms available.
-2. No examples or documentation.
+No examples or documentation.
 
 ## More Info
 

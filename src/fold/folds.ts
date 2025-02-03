@@ -7,92 +7,74 @@ import {Fix, ProductTypeLambda} from '../fix.js'
  * The return type of all folding schemes.
  * @category fold
  */
-export type Fold<
-  F extends TypeLambda,
-  A,
-  Out1 = unknown,
-  Out2 = unknown,
-  In1 = never,
-> = (fixed: Fix<F, Out1, Out2, In1>) => A
+export type Fold<F extends TypeLambda, A, E = unknown, R = never> = (
+  fixed: Fix<F, E, R>,
+) => A
 
-/**
- * A function of type:
- * `(fa: Outer<I₁, O₂, O₁, Inner<I₁, O₂, O₁, A>>) ⇒ A`.
+/*
+ * A function of type: `(fa: Outer<Inner<A, E, R>, E, R>) ⇒ A`.
  * @category fold
  */
 export type Folder<
   Outer extends TypeLambda,
   Inner extends TypeLambda,
   A,
-  Out1,
-  Out2,
-  In1,
-> = (fa: Kind<Outer, In1, Out2, Out1, Kind<Inner, In1, Out2, Out1, A>>) => A
+  E = unknown,
+  R = never,
+> = (fa: Kind<Outer, R, unknown, E, Kind<Inner, R, unknown, E, A>>) => A
 
 /**
- * A function of the type: `(fa: F<I₁, O₂, O₁, A>) ⇒ A`.
+ * A function of the type: `(fa: F<A, E, R>) ⇒ A`.
  * @category fold
  */
-export type Algebra<
-  F extends TypeLambda,
+export type Algebra<F extends TypeLambda, A, E = unknown, R = never> = Folder<
+  F,
+  Id,
   A,
-  Out1 = unknown,
-  Out2 = unknown,
-  In1 = never,
-> = Folder<F, Id, A, Out1, Out2, In1>
+  E,
+  R
+>
 
 /**
  * Same as `Algebra` except the `A` type on the left hand side is replaced with
  * a tuple of `Fix<F>` and `A`. A function of the type:
- * `(fa: F<I₁, O₂, O₁, [Fix<F, O₁, O₂, I₁>, A]>) ⇒ A`
+ * `(fa: F<[Fix<F, E, R>, A], E, R>) ⇒ A`
  * @category fold
  */
-export type RAlgebra<
-  F extends TypeLambda,
+export type RAlgebra<F extends TypeLambda, A, E = unknown, R = never> = Folder<
+  F,
+  ProductTypeLambda<F>,
   A,
-  Out1 = unknown,
-  Out2 = unknown,
-  In1 = never,
-> = Folder<F, ProductTypeLambda<F>, A, Out1, Out2, In1>
+  E,
+  R
+>
 
 /**
  * Same as `Algebra` except the `A` type on the left side is replaced with a
  * tuple of `A` and `B`. A function of the type:
- * `(fa: F<I₁, O₂, O₁, [A, B]>) ⇒ A`
+ * `(fa: F<[A, B], E, R>) ⇒ A`
  * @category fold
  */
 export type DistLeft<
   F extends TypeLambda,
   A,
   B,
-  Out1 = unknown,
-  Out2 = unknown,
-  In1 = never,
-> = Folder<F, TupleWithTypeLambda<B>, A, Out1, Out2, In1>
+  E = unknown,
+  R = never,
+> = Folder<F, TupleWithTypeLambda<B>, A, E, R>
 
 /**
  * Same as `Algebra` except the `A` type on the left side is replaced with a
  * tuple of `B` and `A`. A function of the type:
- * `(fa: F<I₁, O₂, O₁, [B, A]>) ⇒ A`
+ * `(fa: F<[B, A], E, R>) ⇒ A`
  * @category fold
  */
-export type DistRight<
-  F extends TypeLambda,
-  A,
-  B,
-  Out1 = unknown,
-  Out2 = unknown,
-  In1 = never,
-> = (fa: Kind<F, In1, Out2, Out1, [B, A]>) => A
+export type DistRight<F extends TypeLambda, A, B, E = unknown, R = never> = (
+  fa: Kind<F, R, unknown, E, [B, A]>,
+) => A
 
 export interface AlgebraTypeLambda<F extends TypeLambda> extends TypeLambda {
-  readonly type: Algebra<
-    F,
-    this['Target'],
-    this['Out1'],
-    this['Out2'],
-    this['In']
-  >
+  readonly type: Algebra<F, this['Target'], this['Out1'], this['In']>
 }
 
 export interface TupleWithTypeLambda<B> extends TypeLambda {
@@ -101,19 +83,15 @@ export interface TupleWithTypeLambda<B> extends TypeLambda {
 
 export type Catamorphism = <F extends TypeLambda>(
   F: TA.Traversable<F>,
-) => <A, Out1 = unknown, Out2 = unknown, In1 = never>(
-  φ: Algebra<F, A, Out1, Out2, In1>,
-) => Fold<F, A, Out1, Out2, In1>
+) => <A, E = unknown, R = never>(φ: Algebra<F, A, E, R>) => Fold<F, A, E, R>
 
 export type Paramorphism = <F extends TypeLambda>(
   F: TA.Traversable<F>,
-) => <A, Out1 = unknown, Out2 = unknown, In1 = never>(
-  φ: RAlgebra<F, A, Out1, Out2, In1>,
-) => Fold<F, A, Out1, Out2, In1>
+) => <A, E = unknown, R = never>(φ: RAlgebra<F, A, E, R>) => Fold<F, A, E, R>
 
 export type Zygomorphism = <F extends TypeLambda>(
   F: TA.Traversable<F>,
-) => <A, B, Out1 = unknown, Out2 = unknown, In1 = never>(
-  f: DistLeft<F, A, B, Out1, Out2, In1>,
-  φ: Algebra<F, B, Out1, Out2, In1>,
-) => Fold<F, A, Out1, Out2, In1>
+) => <A, B, E = unknown, R = never>(
+  f: DistLeft<F, A, B, E, R>,
+  φ: Algebra<F, B, E, R>,
+) => Fold<F, A, E, R>

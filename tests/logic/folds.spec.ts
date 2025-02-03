@@ -14,12 +14,12 @@ import {
   count,
   countTrue,
   evaluate,
+  leaves,
   maxDepth,
   nodes,
   paths,
   show,
   showExpr,
-  values,
 } from './folds.js'
 import {exprCata, exprCovariant, testCata, testCatas} from './helpers.js'
 import {showTree} from './showTree.js'
@@ -71,7 +71,7 @@ describe('folds', () => {
     [conjunction(True, xor(True, False)), 5],
   )
 
-  testCatas('values', values, 'toEqual')(
+  testCatas('values', leaves, 'toEqual')(
     [True, [true]],
     [False, [false]],
     [conjunction(True, negation(False)), [true, false]],

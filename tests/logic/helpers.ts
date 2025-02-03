@@ -1,6 +1,5 @@
 import {Covariant as CO} from '@effect/typeclass'
-import {Algebra, cata, para, zygo} from 'effect-ts-folds'
-import {traverseCovariant} from '../../src/traversable.js'
+import {traverseCovariant, Algebra, cata, para, zygo} from 'effect-ts-folds'
 import {Expr} from './expr.js'
 import {ExprFLambda, Traversable} from './exprF.js'
 import {showExpr} from './folds.js'

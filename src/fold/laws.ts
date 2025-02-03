@@ -4,10 +4,9 @@ import {Law, LawSet} from 'effect-ts-laws'
 import {tupled} from 'effect/Function'
 import {Kind, TypeLambda} from 'effect/HKT'
 import fc from 'fast-check'
-import {fix, Fix, unfix, Unfixed} from '../fix.js'
+import {Fix, fix, unfix, Unfixed} from '../fix.js'
 import {Given} from '../laws.js'
-import {fanout} from '../pair.js'
-import {traverseMap} from '../traversable.js'
+import {fanout, traverseCovariant} from '../util.js'
 import {Catamorphism, Paramorphism, RAlgebra} from './folds.js'
 import {cata, para, zygo} from './schemes.js'
 
@@ -34,7 +33,7 @@ export const cataLaws =
       )((unfixed, φ) =>
         equalsA(
           pipe(unfixed, fix, cataF(φ)),
-          pipe(unfixed, traverseMap(F)(cataF(φ)), φ),
+          pipe(unfixed, traverseCovariant(F).map(cataF(φ)), φ),
         ),
       ),
 
@@ -88,18 +87,16 @@ export const zygoLaws =
   }
 
 const standaloneCata: Catamorphism = F => φ => fixed =>
-  pipe(fixed, unfix, traverseMap(F)(standaloneCata(F)(φ)), φ)
+  pipe(fixed, unfix, traverseCovariant(F).map(standaloneCata(F)(φ)), φ)
 
 const paraBasedCata: Catamorphism = F => φ =>
-  para(F)(flow(traverseMap(F)(TU.getSecond), φ))
+  para(F)(flow(traverseCovariant(F).map(TU.getSecond), φ))
 
 export const zygoBasedPara: Paramorphism =
   <F extends TypeLambda>(F: TA.Traversable<F>) =>
-  <A, Out1 = unknown, Out2 = unknown, In1 = never>(
-    φ: RAlgebra<F, A, Out1, Out2, In1>,
-  ) =>
+  <A, E = unknown, R = never>(φ: RAlgebra<F, A, E, R>) =>
     zygo(F)(
-      (fa: Kind<F, In1, Out2, Out1, [A, Fix<F, Out1, Out2, In1>]>) =>
-        pipe(fa, traverseMap(F)(TU.swap), φ),
+      (fa: Kind<F, R, unknown, E, [A, Fix<F, E, R>]>) =>
+        pipe(fa, traverseCovariant(F).map(TU.swap), φ),
       fix,
     )

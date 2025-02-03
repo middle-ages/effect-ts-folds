@@ -1,6 +1,6 @@
 import {pipe} from 'effect'
-import {Algebra, struct, zipFolds} from 'effect-ts-folds'
 import {TupleOf} from 'effect/Types'
+import {Algebra, struct, zipFolds} from '../../src/index.js'
 import {cons} from './cons.js'
 import {ConsFLambda, instances} from './consF.js'
 import {consCata, count, max, product, sum} from './schemes.js'

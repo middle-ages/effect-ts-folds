@@ -9,9 +9,14 @@ import {DistLeft} from './folds.js'
  * The return type of all schemes that fold into an effect.
  * @category fold
  */
-export type EffectFold<F extends TypeLambda, A, E, R, Out1, Out2, In1> = (
-  fixed: Fix<F, Out1, Out2, In1>,
-) => EF.Effect<A, E, R>
+export type EffectFold<
+  F extends TypeLambda,
+  A,
+  E1 = unknown,
+  R1 = never,
+  E2 = unknown,
+  R2 = never,
+> = (fixed: Fix<F, E2, R2>) => EF.Effect<A, E1, R1>
 
 /**
  * Same as `Folder` but folds into an `Effect`.
@@ -21,60 +26,57 @@ export type EffectFolder<
   Outer extends TypeLambda,
   Inner extends TypeLambda,
   A,
-  E,
-  R,
-  Out1,
-  Out2,
-  In1,
+  E1 = unknown,
+  R1 = never,
+  E2 = unknown,
+  R2 = never,
 > = (
-  fa: Kind<Outer, In1, Out2, Out1, Kind<Inner, In1, Out2, Out1, A>>,
-) => EF.Effect<A, E, R>
+  fa: Kind<Outer, R2, unknown, E2, Kind<Inner, R2, unknown, E2, A>>,
+) => EF.Effect<A, E1, R1>
 
 /**
  * Same as {@link Algebra} but folds in an effect. A function of the type:
- * `(fa: F<I₁, O₂, O₁, A>) ⇒ Effect<A, E, R>`
+ * `(fa: F<A, E, R>) ⇒ Effect<A, E, R>`
  * @category fold
  */
 export type EffectAlgebra<
   F extends TypeLambda,
   A,
-  E = never,
-  R = never,
-  Out1 = unknown,
-  Out2 = unknown,
-  In1 = never,
-> = EffectFolder<F, Id, A, E, R, Out1, Out2, In1>
+  E1 = unknown,
+  R1 = never,
+  E2 = unknown,
+  R2 = never,
+> = EffectFolder<F, Id, A, E1, R1, E2, R2>
 
 /**
  * An {@link RAlgebra} that unfolds into an effect. A function of the type:
- * `(fa: F<I₁, O₂, O₁, [Fix<F, O₁, O₂, I₁>, A]>) ⇒ Effect<A, E, R>`
+ * `(fa: F<[Fix<F, E, R>, A], E, R>) ⇒ Effect<A, E, R>`
  * @category fold
  */
 export type EffectRAlgebra<
   F extends TypeLambda,
   A,
-  E = never,
-  R = never,
-  Out1 = unknown,
-  Out2 = unknown,
-  In1 = never,
-> = EffectFolder<F, ProductTypeLambda<F>, A, E, R, Out1, Out2, In1>
+  E1 = unknown,
+  R1 = never,
+  E2 = unknown,
+  R2 = never,
+> = EffectFolder<F, ProductTypeLambda<F>, A, E1, R1, E2, R2>
 
 export type CatamorphismE = <F extends TypeLambda>(
   F: TA.Traversable<F>,
-) => <A, E = unknown, R = unknown, Out1 = unknown, Out2 = unknown, In1 = never>(
-  φ: EffectAlgebra<F, A, E, R, Out1, Out2, In1>,
-) => EffectFold<F, A, E, R, Out1, Out2, In1>
+) => <A, E1 = unknown, R1 = never, E2 = unknown, R2 = never>(
+  φ: EffectAlgebra<F, A, E1, R1, E2, R2>,
+) => EffectFold<F, A, E1, R1, E2, R2>
 
 export type ParamorphismE = <F extends TypeLambda>(
   F: TA.Traversable<F>,
-) => <A, E = never, R = never, Out1 = unknown, Out2 = unknown, In1 = never>(
-  φ: EffectRAlgebra<F, A, E, R, Out1, Out2, In1>,
-) => EffectFold<F, A, E, R, Out1, Out2, In1>
+) => <A, E1 = unknown, R1 = never, E2 = unknown, R2 = never>(
+  φ: EffectRAlgebra<F, A, E1, R1, E2, R2>,
+) => EffectFold<F, A, E1, R1, E2, R2>
 
 export type ZygomorphismE = <F extends TypeLambda>(
   F: TA.Traversable<F>,
-) => <A, B, E = never, R = never, Out1 = unknown, Out2 = unknown, In1 = never>(
-  f: DistLeft<F, A, B, Out1, Out2, In1>,
-  φ: EffectAlgebra<F, B, E, R, Out1, Out2, In1>,
-) => EffectFold<F, A, E, R, Out1, Out2, In1>
+) => <A, B, E1 = unknown, R1 = never, E2 = unknown, R2 = never>(
+  f: DistLeft<F, A, B, E2, R2>,
+  φ: EffectAlgebra<F, B, E1, R1, E2, R2>,
+) => EffectFold<F, A, E1, R1, E2, R2>

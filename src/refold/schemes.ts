@@ -1,5 +1,5 @@
 import {Effect as EF, flow, pipe} from 'effect'
-import {traverseSuspended} from '../cont.js'
+import {traverseSuspended} from '../util.js'
 import {Hylomorphism, HylomorphismE} from './refolds.js'
 
 export const hyloE: HylomorphismE = F => (ψ, φ) => a =>

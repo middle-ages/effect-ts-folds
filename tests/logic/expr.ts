@@ -11,7 +11,7 @@ import {
 
 export type Expr = Fix<ExprFLambda>
 
-const fix = fixOf<ExprFLambda>
+export const fix = fixOf<ExprFLambda>
 
 export const [True, False]: [Expr, Expr] = [fix(TrueF), fix(FalseF)]
 

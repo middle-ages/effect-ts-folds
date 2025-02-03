@@ -1,8 +1,13 @@
 {
   "extends": ["../config/tsconfig.base.json"],
   "compilerOptions": {
-    "types": ["vitest/globals"],
-    "composite": true,
-    "outDir": "../.dev/dist/tests"
-  }
+    "rootDir": "..",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "incremental": true,
+    "outDir": "../.dev/tests",
+    "types": ["vitest/globals"]
+  },
+  "include": ["../src", "."]
 }

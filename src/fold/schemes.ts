@@ -2,9 +2,8 @@ import {Traversable as TA} from '@effect/typeclass'
 import {Effect as EF, flow, pipe, Tuple as TU} from 'effect'
 import {Kind, TypeLambda} from 'effect/HKT'
 import {Fix, fix, unfix} from '../fix.js'
-import {fanout, pairWithFirst} from '../pair.js'
 import {hyloE} from '../refold/schemes.js'
-import {traverseMap} from '../traversable.js'
+import {fanout, pairWithFirst, traverseCovariant} from '../util.js'
 import {
   CatamorphismE,
   EffectAlgebra,
@@ -19,16 +18,16 @@ export const cataE: CatamorphismE = F => φ =>
 
 export const paraE: ParamorphismE =
   <F extends TypeLambda>(F: TA.Traversable<F>) =>
-  <A, E = never, R = never, Out1 = unknown, Out2 = unknown, In1 = never>(
-    φ: EffectRAlgebra<F, A, E, R, Out1, Out2, In1>,
+  <A, E1 = unknown, R1 = never, E2 = unknown, R2 = never>(
+    φ: EffectRAlgebra<F, A, E1, R1, E2, R2>,
   ) =>
-  (fixed: Fix<F, Out1, Out2, In1>) =>
+  (fixed: Fix<F, E2, R2>) =>
     pipe(
       fixed,
-      cataE(F)((fa: Kind<F, In1, Out2, Out1, [typeof fixed, A]>) => {
+      cataE(F)((fa: Kind<F, R2, unknown, E2, [typeof fixed, A]>) => {
         const [fixed, effect] = pipe(
           fa,
-          fanout(fa => pipe(fa, traverseMap(F)(TU.getFirst), fix), φ),
+          fanout(fa => pipe(fa, traverseCovariant(F).map(TU.getFirst), fix), φ),
         )
         return pipe(effect, EF.map(pairWithFirst(fixed)))
       }),
@@ -37,15 +36,15 @@ export const paraE: ParamorphismE =
 
 export const zygoE: ZygomorphismE =
   <F extends TypeLambda>(F: TA.Traversable<F>) =>
-  <A, B, E = never, R = never, Out1 = unknown, Out2 = unknown, In1 = never>(
-    f: DistLeft<F, A, B, Out1, Out2, In1>,
-    φ: EffectAlgebra<F, B, E, R, Out1, Out2, In1>,
+  <A, B, E1 = unknown, R1 = never, E2 = unknown, R2 = never>(
+    f: DistLeft<F, A, B, E2, R2>,
+    φ: EffectAlgebra<F, B, E1, R1, E2, R2>,
   ) =>
     flow(
-      cataE(F)((fab: Kind<F, In1, Out2, Out1, [A, B]>) =>
+      cataE(F)((fab: Kind<F, R2, unknown, E2, [A, B]>) =>
         pipe(
           fab,
-          traverseMap(F)(TU.getSecond),
+          traverseCovariant(F).map(TU.getSecond),
           φ,
           EF.map(pairWithFirst(f(fab))),
         ),

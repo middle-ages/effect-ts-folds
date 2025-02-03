@@ -13,13 +13,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reportsDirectory: './.dev',
-      exclude: [
-        '.dev',
-        'dev',
-        'conf',
-        'src/dev',
-        'tests',
-      ],
+      exclude: ['.dev', 'dev', 'conf', 'tests'],
     },
   },
 })

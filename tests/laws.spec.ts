@@ -8,7 +8,8 @@ import {
   unfix,
   zygoLaws,
 } from 'effect-ts-folds'
-import {tinyInteger, verboseLaws} from 'effect-ts-laws'
+import {tinyInteger} from 'effect-ts-laws'
+import {verboseLaws} from 'effect-ts-laws/vitest'
 import {constant} from 'effect/Function'
 import fc from 'fast-check'
 import {

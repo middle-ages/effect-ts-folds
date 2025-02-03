@@ -11,21 +11,21 @@ export const struct =
   <F extends TypeLambda>(F: CO.Covariant<F>) =>
   <S extends Record<string, Algebra<F, any>>>(struct: S) => {
     type Key = keyof S
-    type ReturnTypes<Out2, Out1, In1> = {
-      [K in Key]: S[K] extends Algebra<F, infer A, Out2, Out1, In1> ? A : never
+    type ReturnTypes<R, E> = {
+      [K in Key]: S[K] extends Algebra<F, infer A, R, E> ? A : never
     }
 
-    return <Out1 = unknown, Out2 = unknown, In1 = never>(
-      fas: Kind<F, In1, Out2, Out1, ReturnTypes<Out2, Out1, In1>>,
-    ): ReturnTypes<Out2, Out1, In1> => {
-      const result = {} as ReturnTypes<Out2, Out1, In1>
+    return <R = never, E = unknown>(
+      fas: Kind<F, R, unknown, E, ReturnTypes<R, E>>,
+    ): ReturnTypes<R, E> => {
+      const result = {} as ReturnTypes<R, E>
 
       for (const key of Object.keys(struct) as Key[])
         result[key] = pipe(
           fas,
           F.map(xs => xs[key]),
           struct[key] as Algebra<F, any>,
-        ) as ReturnTypes<Out2, Out1, In1>[typeof key]
+        ) as ReturnTypes<R, E>[typeof key]
 
       return result
     }

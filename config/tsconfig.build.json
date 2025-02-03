@@ -10,5 +10,5 @@
     "noEmit": false,
     "outDir": "../.dev/dist"
   },
-  "include": ["../src", "../index.ts"]
+  "include": ["../src"]
 }

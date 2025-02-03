@@ -1,4 +1,5 @@
-import {monoEquivalence, testTypeclassLaws} from 'effect-ts-laws'
+import {monoEquivalence} from 'effect-ts-laws'
+import {testTypeclassLaws} from 'effect-ts-laws/vitest'
 import {
   ExprFLambda,
   getArbitrary,

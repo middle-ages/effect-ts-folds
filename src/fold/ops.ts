@@ -12,11 +12,11 @@ export const imap = <F extends TypeLambda>(
 ): IN.Invariant<AlgebraTypeLambda<F>>['imap'] =>
   dual(
     3,
-    <In1, Out2, Out1, A, B>(
-      self: Algebra<F, A, Out1, Out2, In1>,
+    <A, B, E = unknown, R = never>(
+      self: Algebra<F, A, E, R>,
       to: (a: A) => B,
       from: (b: B) => A,
-    ): Algebra<F, B, Out1, Out2, In1> =>
+    ): Algebra<F, B, E, R> =>
       fa =>
         pipe(fa, F.map(from), self, to),
   )

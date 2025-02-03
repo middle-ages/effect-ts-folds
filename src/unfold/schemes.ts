@@ -1,8 +1,7 @@
 import {Effect as EF, flow, pipe} from 'effect'
-import {traverseSuspended} from '../cont.js'
-import {fix} from '../fix.js'
-import {fanin} from '../pair.js'
 import {hylo, hyloE} from '../refold/schemes.js'
+import {fanin, traverseSuspended} from '../util.js'
+import {fix} from '../fix.js'
 import {AnamorphismE, ApomorphismE} from './effect.js'
 import {Anamorphism, Apomorphism} from './unfolds.js'
 
