@@ -22,6 +22,10 @@ Recursion schemes for [effect-ts](https://effect.website/).
    [law tests](https://github.com/middle-ages/effect-ts-laws) for
    [folds](src/fold/laws.ts) and [unfolds](src/unfold/laws.ts).
 
+### Types
+
+<a href="./docs/effect-ts-folds-types.png"><img src="./docs/effect-ts-folds-types.png" alt="effect-ts-folds types" width="3200"/></a>
+
 ## Limitations
 
 No examples or documentation.

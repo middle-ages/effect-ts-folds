@@ -25,16 +25,6 @@ export const pairMap =
   <A, B>(ab: (a: A) => B) =>
   ([a1, a2]: [A, A]): [B, B] => [ab(a1), ab(a2)]
 
-/**
- * Duplicate a value to create a pair.
- * @pair
- */
-export const dup = <A>(a: A): [A, A] => [a, a]
-
 export const pairWithFirst =
   <A>(first: A) =>
   <B>(second: B): [A, B] => [first, second]
-
-export const pairWithSecond =
-  <B>(second: B) =>
-  <A>(first: A): [A, B] => [first, second]

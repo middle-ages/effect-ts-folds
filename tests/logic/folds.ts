@@ -89,8 +89,8 @@ export const levels: ExprAlgebra<Strings2> = matchF(
   flow(showValue, AR.of, AR.of),
   AR.map(AR.prepend('¬')),
   isAnd => (left, right) => [
-    ...pipe(left, transpose, AR.map(symbol(isAnd))),
-    ...pipe(right, transpose, AR.map(symbol(isAnd))),
+    ...(pipe(left, transpose, AR.map(symbol(isAnd))) as Strings2),
+    ...(pipe(right, transpose, AR.map(symbol(isAnd))) as Strings2),
   ],
 )
 
