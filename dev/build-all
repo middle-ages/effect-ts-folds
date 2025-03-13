@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+pnpm clean
+pnpm lint
+pnpm circular
+pnpm test:run
+pnpm build
+
+cp package.json .dev/dist
+cp README.md .dev/dist
+

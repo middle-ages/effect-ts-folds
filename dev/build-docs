@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+mkdir -p .dev
+
+rm -rf ../effect-ts-laws-docs/*
+
+typedoc --options config/typedoc.json

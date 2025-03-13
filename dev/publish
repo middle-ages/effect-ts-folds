@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+pnpm build:all
+
+cp ~/.npmrc .dev/dist
+
+cd .dev/dist
+pnpm install
+pnpm publish 

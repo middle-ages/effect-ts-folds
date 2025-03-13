@@ -7,51 +7,56 @@ import {Given} from '../laws.js'
 import {ana, apo} from './schemes.js'
 import {Coalgebra, Unfold} from './unfolds.js'
 
-export const anaLaws =
-  <F extends TypeLambda>(F: TA.Traversable<F> & CO.Covariant<F>) =>
-  <A, B>({a, equalsF, fixed, ψ}: Given<F, A, B>) => {
-    const anaF = ana(F)
+export const anaLaws = <F extends TypeLambda, A, B>(
+  F: TA.Traversable<F> & CO.Covariant<F>,
+  {a, equalsF, fixed, ψ}: Given<F, A, B>,
+) => {
+  const anaF = ana(F)
 
-    return LawSet()(
-      'anamorphism',
+  return LawSet()(
+    'anamorphism',
 
-      Law(
-        'identity',
-        'ana(unfix) = id',
-        fixed,
-      )(fixed => equalsF(pipe(fixed, anaF(unfix)), fixed)),
+    Law(
+      'identity',
+      'ana(unfix) = id',
+      fixed,
+    )(fixed => equalsF(pipe(fixed, anaF(unfix)), fixed)),
 
-      Law(
-        'hylo consistency',
-        'ana(ψ) = hylo(ψ, fix)',
-        a,
-        ψ,
-      )((a, ψ) => equalsF(pipe(a, anaF(ψ)), pipe(a, standaloneAna(F)(ψ)))),
-    )
-  }
+    Law(
+      'hylo consistency',
+      'ana(ψ) = hylo(ψ, fix)',
+      a,
+      ψ,
+    )((a, ψ) => equalsF(pipe(a, anaF(ψ)), pipe(a, standaloneAna(F, ψ)))),
+  )
+}
 
-export const apoLaws =
-  <F extends TypeLambda>(F: TA.Traversable<F> & CO.Covariant<F>) =>
-  <A, B>({a, equalsF, ψ}: Given<F, A, B>) => {
-    return LawSet()(
-      'apomorphism',
+export const apoLaws = <F extends TypeLambda, A, B>(
+  F: TA.Traversable<F> & CO.Covariant<F>,
+  {a, equalsF, ψ}: Given<F, A, B>,
+) => {
+  return LawSet()(
+    'apomorphism',
 
-      Law(
-        'ana consistency',
-        'ana(ψ) = apo(F.map(Either.right) ∘ ψ) ',
-        a,
-        ψ,
-      )((a, ψ) => equalsF(pipe(a, ana(F)(ψ)), pipe(a, apoBasedAna(F)(ψ)))),
-    )
-  }
+    Law(
+      'ana consistency',
+      'ana(ψ) = apo(F.map(Either.right) ∘ ψ) ',
+      a,
+      ψ,
+    )((a, ψ) => equalsF(pipe(a, ana(F)(ψ)), pipe(a, apoBasedAna(F, ψ)))),
+  )
+}
 
 const standaloneAna =
-  <F extends TypeLambda>(F: CO.Covariant<F>) =>
-  <A, E = unknown, R = never>(ψ: Coalgebra<F, A, E, R>): Unfold<F, A, E, R> =>
+  <F extends TypeLambda, A, E = unknown, R = never>(
+    F: CO.Covariant<F>,
+    ψ: Coalgebra<F, A, E, R>,
+  ): Unfold<F, A, E, R> =>
   a =>
-    pipe(a, ψ, F.map(standaloneAna(F)(ψ)), fix)
+    pipe(a, ψ, F.map(standaloneAna(F, ψ)), fix)
 
-export const apoBasedAna =
-  <F extends TypeLambda>(F: TA.Traversable<F> & CO.Covariant<F>) =>
-  <A, E = unknown, R = never>(ψ: Coalgebra<F, A, E, R>): Unfold<F, A, E, R> =>
-    apo(F)(flow(ψ, F.map<A, EI.Either<A, Fix<F, E, R>>>(EI.right)))
+export const apoBasedAna = <F extends TypeLambda, A, E = unknown, R = never>(
+  F: TA.Traversable<F> & CO.Covariant<F>,
+  ψ: Coalgebra<F, A, E, R>,
+): Unfold<F, A, E, R> =>
+  apo(F)(flow(ψ, F.map<A, EI.Either<A, Fix<F, E, R>>>(EI.right)))

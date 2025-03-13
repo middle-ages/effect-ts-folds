@@ -1,4 +1,4 @@
-import {Array as AR, pipe, String as STR} from 'effect'
+import {Array as AR, flow, pipe, String as STR} from 'effect'
 import {Algebra} from 'effect-ts-folds'
 import {ExprFLambda, matchF} from './exprF.js'
 import {showOp} from './folds.js'
@@ -37,5 +37,5 @@ const binOp =
 export const showTree: Algebra<ExprFLambda, AR.NonEmptyArray<string>> = matchF(
   value => pipe(value ? '⊤' : '⊥', leaf, AR.of),
   ([head, ...tail]) => [branch('¬'), elbow(head), ...pipe(tail, AR.map(space))],
-  isAnd => pipe(isAnd, showOp, binOp),
+  flow(showOp, binOp),
 )

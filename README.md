@@ -32,5 +32,6 @@ No examples or documentation.
 
 ## More Info
 
-1. [Haskell](https://hackage.haskell.org/package/recursion-schemes)
-2. [Awesome recursion schemes](https://github.com/passy/awesome-recursion-schemes)
+1. [API Docs](https://middle-ages.github.io/effect-ts-folds-docs/modules.html)
+2. [Haskell](https://hackage.haskell.org/package/recursion-schemes)
+3. [Awesome recursion schemes](https://github.com/passy/awesome-recursion-schemes)

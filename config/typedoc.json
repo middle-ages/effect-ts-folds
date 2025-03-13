@@ -1,0 +1,29 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "../src/index.ts",
+    "../src/fold.ts",
+    "../src/unfold.ts",
+    "../src/refold.ts",
+    "../src/fix.ts",
+    "../src/laws.ts"
+  ],
+  "out": "../../effect-ts-folds-docs",
+  "readme": "../README.md",
+  "hideGenerator": true,
+  "searchInComments": true,
+  "json": "../.dev/typedoc-index.json",
+  "searchInDocuments": true,
+  "tsconfig": "./tsconfig.lib.json",
+  "githubPages": true,
+  "cleanOutputDir": false,
+  "navigation": {
+    "includeCategories": true,
+    "includeGroups": false,
+    "includeFolders": true
+  },
+  "visibilityFilters": {
+    "@internal": false
+  },
+  "sourceLinkExternal": true
+}

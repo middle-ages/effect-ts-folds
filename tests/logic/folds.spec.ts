@@ -122,12 +122,6 @@ describe('folds', () => {
     [xor(True, False), ['∨', '∧', '⊤', '¬', '⊥', '∧', '¬', '⊤', '⊥']],
   )
 
-  /*
-  test('negateValues', () => {
-    expect(showExpr(exprCata(negateValues)(xor(True, False)))).toBe('(¬⊤ ∨ ¬⊥)')
-  })
-    */
-
   testCatas(
     'show, count, and evaluate',
     zipFolds(exprCovariant)(show, evaluate, count),

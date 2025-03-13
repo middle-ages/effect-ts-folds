@@ -22,6 +22,7 @@
     "deduped",
     "demi",
     "depcruise",
+    "Eeuo",
     "Eilam",
     "fabc",
     "fanin",
@@ -32,6 +33,7 @@
     "kinded",
     "Kleisli",
     "lmsansdemicond",
+    "madge",
     "millis",
     "Millis",
     "monoid",
@@ -55,6 +57,7 @@
     "Typeclass",
     "typeclasses",
     "Typeclassopedia",
+    "typedoc",
     "untupled",
     "vpad",
     "webfont",
@@ -76,7 +79,7 @@
     "MD041": false
   },
   "eslint.options": {
-    "overrideConfigFile": "config/eslint.config.js"
+    "overrideConfigFile": "config/eslint.config.ts"
   },
   "eslint.workingDirectories": [
     {

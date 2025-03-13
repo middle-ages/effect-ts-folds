@@ -1,7 +1,7 @@
 import {Either as EI} from 'effect'
 /**
  * Run a pair of functions on the same value and return the result tuple.
- * @pair
+ * @category pair
  */
 export const fanout =
   <A, B, C>(ab: (a: A) => B, ac: (a: A) => C) =>
@@ -10,7 +10,7 @@ export const fanout =
 /**
  * Convert a pair of functions into a function that runs the first on left and
  * the second on right.
- * @pair
+ * @category pair
  */
 export const fanin = <A, B, C>(
   ba: (b: B) => A,
@@ -19,7 +19,7 @@ export const fanin = <A, B, C>(
 
 /**
  * Map over both members of a pair with a single function.
- * @pair
+ * @category pair
  */
 export const pairMap =
   <A, B>(ab: (a: A) => B) =>

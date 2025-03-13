@@ -36,14 +36,13 @@ describe('laws', () => {
 
   for (const lawSet of [
     ...pipe(
-      [cataLaws, paraLaws],
-      AR.map(l => l<ConsFLambda, number>(instances)<Cons>(given)),
+      [cataLaws, paraLaws, zygoLaws],
+      AR.map(l => l(instances, given)),
     ),
-    pipe(given, zygoLaws(instances)),
 
     ...pipe(
       [anaLaws, apoLaws],
-      AR.map(l => l(instances)(given)),
+      AR.map(l => l(instances, given)),
     ),
   ])
     verboseLaws(lawSet)

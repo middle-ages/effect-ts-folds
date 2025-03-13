@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+pnpm build:docs
+
+cd ../effect-ts-folds-docs
+git add .
+git commit -m publish
+git push
