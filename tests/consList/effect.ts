@@ -1,5 +1,4 @@
 import {Effect as EF, pipe} from 'effect'
-import {constant} from 'effect/Function'
 import {
   anaE,
   cataE,
@@ -10,6 +9,7 @@ import {
   hyloE,
   paraE,
 } from 'effect-ts-folds'
+import {constant} from 'effect/Function'
 import {Cons} from './cons.js'
 import {ConsFLambda, instances, match} from './consF.js'
 

@@ -9,8 +9,8 @@ const map = <F extends TypeLambda>(
 ): CO.Covariant<F>['map'] =>
   dual(
     2,
-    <A, B, E = unknown, R = never>(
-      fa: Kind<F, R, unknown, E, A>,
+    <A, B, E = unknown, R = unknown, I = never>(
+      fa: Kind<F, E, R, I, A>,
       f: (a: A) => B,
     ) => pipe(fa, F.traverse(IdentityApplicative)(f)),
   )

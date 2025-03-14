@@ -14,12 +14,14 @@ import {
   alternateSum,
   consAna,
   consApo,
+  consHisto,
   consPara,
   consZygo,
   countCata,
   countRange,
   flip,
   halves,
+  odds,
   rangeAna,
   tails,
   takeUntil,
@@ -88,8 +90,8 @@ describe('consList', () => {
 
           try {
             pipe(AR.range(1, 20_000), cons, foldE, EF.runSync)
-          } catch (e) {
-            expect((e as Error).message).match(/no more cata/)
+          } catch (error: unknown) {
+            expect((error as Error).message).match(/no more cata/)
           }
 
           expect(counter).toBe(4)
@@ -143,5 +145,11 @@ describe('consList', () => {
         })
       })
     })
+  })
+
+  test('histo', () => {
+    expect(pipe(AR.range(1, 10_000), cons, consHisto(odds))).toEqual(
+      AR.map(AR.range(0, 4999), i => i * 2 + 1),
+    )
   })
 })

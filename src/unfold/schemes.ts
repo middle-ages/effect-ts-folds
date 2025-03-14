@@ -1,7 +1,7 @@
+import {fix} from '#fix'
+import {fanin, succeedBy, traverseSuspended} from '#util'
 import {Effect as EF, flow, pipe} from 'effect'
 import {hylo, hyloE} from '../refold/schemes.js'
-import {fanin, traverseSuspended} from '../util.js'
-import {fix} from '../fix.js'
 import {AnamorphismE, ApomorphismE} from './effect.js'
 import {Anamorphism, Apomorphism} from './unfolds.js'
 
@@ -19,5 +19,5 @@ export const apoE: ApomorphismE = F => ψ => a =>
 
 export const ana: Anamorphism = F => ψ => hylo(F)(ψ, fix)
 
-export const apo: Apomorphism = F => ψ => a =>
-  pipe(a, apoE(F)(flow(ψ, EF.succeed)), EF.runSync)
+export const apo: Apomorphism = F => ψ =>
+  flow(pipe(ψ, succeedBy, apoE(F)), EF.runSync)

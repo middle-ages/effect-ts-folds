@@ -6,11 +6,16 @@ import {Kind, TypeLambda} from 'effect/HKT'
 export const traverseSuspended: typeof traverseEffect = F => f => fa =>
   EF.suspend(() => pipe(fa, traverseEffect(F)(f)))
 
-const traverseEffect =
+export const traverseEffect =
   <F extends TypeLambda>(F: TA.Traversable<F>) =>
-  <A, B, E1 = unknown, R1 = never>(
+  <A, B, E1 = unknown, R1 = unknown>(
     f: (a: A) => EF.Effect<B, E1, R1>,
-  ): (<E2 = unknown, R2 = never>(
-    fa: Kind<F, R2, unknown, E2, A>,
-  ) => EF.Effect<Kind<F, R2, unknown, E2, B>, E1, R1>) =>
+  ): (<E2 = unknown, R2 = unknown, I2 = never>(
+    fa: Kind<F, I2, R2, E2, A>,
+  ) => EF.Effect<Kind<F, I2, R2, E2, B>, E1, R1>) =>
     F.traverse(getApplicative())(f)
+
+export const succeedBy =
+  <A, B>(f: (a: A) => B) =>
+  (a: A): EF.Effect<B> =>
+    pipe(a, f, EF.succeed)

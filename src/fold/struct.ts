@@ -7,10 +7,11 @@ import {Algebra} from './folds.js'
 export type ReturnTypes<
   F extends TypeLambda,
   S extends Record<string, Algebra<F, any>>,
-  R = never,
   E = unknown,
+  R = unknown,
+  I = never,
 > = {
-  [K in keyof S]: S[K] extends Algebra<F, infer A, R, E> ? A : never
+  [K in keyof S]: S[K] extends Algebra<F, infer A, E, R, I> ? A : never
 }
 
 /**
@@ -21,19 +22,20 @@ export const struct =
   <F extends TypeLambda>(F: CO.Covariant<F>) =>
   <S extends Record<string, Algebra<F, any>>>(struct: S) => {
     type Key = keyof S
-    type Returns<R, E> = ReturnTypes<F, S, R, E>
+    type Returns<E, R, I> = ReturnTypes<F, S, E, R, I>
 
-    return <R = never, E = unknown>(
-      fas: Kind<F, R, unknown, E, Returns<R, E>>,
-    ): Returns<R, E> => {
-      const result = {} as Returns<R, E>
+    return <E = unknown, R = unknown, I = never>(
+      fas: Kind<F, I, R, E, Returns<E, R, I>>,
+    ): Returns<E, R, I> => {
+      const result = {} as Returns<E, R, I>
 
-      for (const key of Object.keys(struct) as Key[])
+      for (const key of Object.keys(struct) as Key[]) {
         result[key] = pipe(
           fas,
           F.map(xs => xs[key]),
           struct[key] as Algebra<F, any>,
-        ) as Returns<R, E>[typeof key]
+        ) as Returns<E, R, I>[typeof key]
+      }
 
       return result
     }

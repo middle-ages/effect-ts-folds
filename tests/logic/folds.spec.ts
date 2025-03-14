@@ -26,17 +26,16 @@ import {showTree} from './showTree.js'
 
 describe('folds', () => {
   describe('show', () => {
-    ;(
-      [
-        ['⊤', True, '⊤'],
-        ['⊥', False, '⊥'],
-        ['⊤ ⊻ ⊥', xor(True, False), '((⊤ ∧ ¬⊥) ∨ (¬⊤ ∧ ⊥))'],
-      ] as const
-    ).forEach(([name, expr, expected]) => {
+    for (const entry of [
+      ['⊤', True, '⊤'],
+      ['⊥', False, '⊥'],
+      ['⊤ ⊻ ⊥', xor(True, False), '((⊤ ∧ ¬⊥) ∨ (¬⊤ ∧ ⊥))'],
+    ] as const) {
+      const [name, expr, expected] = entry
       it(`${name} → “${expected}”`, () => {
         testCata(show)(expr, expected)
       })
-    })
+    }
   })
 
   testCatas('evaluate', evaluate)(

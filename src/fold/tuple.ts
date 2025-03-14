@@ -1,7 +1,7 @@
+import {fanout} from '#util'
 import {Covariant as CO} from '@effect/typeclass'
 import {Array as AR, pipe} from 'effect'
 import {TypeLambda} from 'effect/HKT'
-import {fanout} from '../util.js'
 import {Algebra} from './folds.js'
 
 /**

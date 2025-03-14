@@ -1,4 +1,4 @@
-import {Either as EI} from 'effect'
+import {Either as EI, flow, Tuple} from 'effect'
 /**
  * Run a pair of functions on the same value and return the result tuple.
  * @category pair
@@ -28,3 +28,12 @@ export const pairMap =
 export const pairWithFirst =
   <A>(first: A) =>
   <B>(second: B): [A, B] => [first, second]
+
+export const pairWithSecond =
+  <B>(second: B) =>
+  <A>(first: A): [A, B] => [first, second]
+
+export const square = <A>(a: A): [A, A] => [a, a]
+
+export const squareMapFirst: <A, B>(f: (a: A) => B) => (o: A) => [B, A] = f =>
+  flow(square, Tuple.mapFirst(f))

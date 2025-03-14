@@ -4,11 +4,11 @@ import {
   Traversable as TA,
 } from '@effect/typeclass'
 import {Data, pipe} from 'effect'
+import {Algebra, DistLeft, Fold, RAlgebra, Unfixed} from 'effect-ts-folds'
 import {Monad as AB, LiftArbitrary, LiftEquivalence} from 'effect-ts-laws'
 import {dual, flow} from 'effect/Function'
 import {Kind, TypeLambda} from 'effect/HKT'
 import fc from 'fast-check'
-import {Algebra, DistLeft, Fold, RAlgebra, Unfixed} from 'effect-ts-folds'
 
 export type ExprF<A> = Data.TaggedEnum<{
   Value: {value: boolean}
@@ -105,23 +105,26 @@ export const getEquivalence: LiftEquivalence<ExprFLambda> =
   }
 
 export const getArbitrary =
-  <Out1>(): LiftArbitrary<ExprFLambda, never, unknown, Out1> =>
+  <O>(): LiftArbitrary<ExprFLambda, never, unknown, O> =>
   a =>
     pipe(
       fc.integer({min: 1, max: 3}),
       AB.flatMap(n => {
         switch (n) {
-          case 1:
+          case 1: {
             return fc.constant(TrueF)
-          case 2:
+          }
+          case 2: {
             return pipe(a, AB.map(negationF))
-          default:
+          }
+          default: {
             return pipe(
               fc.tuple(fc.boolean(), a, a),
               AB.map(([isAnd, left, right]) =>
                 (isAnd ? conjunctionF : disjunctionF)(left, right),
               ),
             )
+          }
         }
       }),
     )

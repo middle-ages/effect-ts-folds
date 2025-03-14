@@ -1,9 +1,9 @@
+import {fix, Fix, unfix} from '#fix'
+import {Given} from '#laws'
 import {Covariant as CO, Traversable as TA} from '@effect/typeclass'
 import {Either as EI, flow, pipe} from 'effect'
 import {Law, LawSet} from 'effect-ts-laws'
 import {TypeLambda} from 'effect/HKT'
-import {fix, Fix, unfix} from '../fix.js'
-import {Given} from '../laws.js'
 import {ana, apo} from './schemes.js'
 import {Coalgebra, Unfold} from './unfolds.js'
 
@@ -48,15 +48,21 @@ export const apoLaws = <F extends TypeLambda, A, B>(
 }
 
 const standaloneAna =
-  <F extends TypeLambda, A, E = unknown, R = never>(
+  <F extends TypeLambda, A, E = unknown, R = unknown, I = never>(
     F: CO.Covariant<F>,
-    ψ: Coalgebra<F, A, E, R>,
-  ): Unfold<F, A, E, R> =>
+    ψ: Coalgebra<F, A, E, R, I>,
+  ): Unfold<F, A, E, R, I> =>
   a =>
     pipe(a, ψ, F.map(standaloneAna(F, ψ)), fix)
 
-export const apoBasedAna = <F extends TypeLambda, A, E = unknown, R = never>(
+export const apoBasedAna = <
+  F extends TypeLambda,
+  A,
+  E = unknown,
+  R = unknown,
+  I = never,
+>(
   F: TA.Traversable<F> & CO.Covariant<F>,
-  ψ: Coalgebra<F, A, E, R>,
-): Unfold<F, A, E, R> =>
-  apo(F)(flow(ψ, F.map<A, EI.Either<A, Fix<F, E, R>>>(EI.right)))
+  ψ: Coalgebra<F, A, E, R, I>,
+): Unfold<F, A, E, R, I> =>
+  apo(F)(flow(ψ, F.map<A, EI.Either<A, Fix<F, E, R, I>>>(EI.right)))

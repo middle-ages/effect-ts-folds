@@ -1,6 +1,7 @@
 import eslint from '@eslint/js'
 import {Linter} from 'eslint'
 import allRecommended from 'eslint-plugin-prettier/recommended'
+import eslintPluginUnicorn from 'eslint-plugin-unicorn'
 import tseslint from 'typescript-eslint'
 
 const {languageOptions: _, ...recommended} = allRecommended
@@ -11,6 +12,7 @@ const config = tseslint.config(
 
   eslint.configs.recommended,
   tseslint.configs.strictTypeChecked,
+  eslintPluginUnicorn.configs.recommended,
   recommended,
 
   {
@@ -37,6 +39,14 @@ const config = tseslint.config(
           varsIgnorePattern: '^_',
         },
       ],
+      'unicorn/prevent-abbreviations': 'off',
+      'unicorn/no-array-callback-reference': 'off',
+      'unicorn/filename-case': 'off',
+      'unicorn/no-abusive-eslint-disable': 'off',
+      'unicorn/no-array-method-this-argument': 'off',
+      'unicorn/no-null': 'off',
+      'unicorn/no-array-reduce': 'off',
+      'unicorn/consistent-function-scoping': 'off',
     },
   },
 ) as Linter.Config[]

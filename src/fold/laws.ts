@@ -1,21 +1,24 @@
-import {Traversable as TA} from '@effect/typeclass'
-import {Array as AR, flow, pipe, Tuple as TU} from 'effect'
+import {Cofree, extract, Fix, fix, unfix, Unfixed} from '#fix'
+import {fanout, square, squareMapFirst, traverseCovariant} from '#util'
+import {Traversable} from '@effect/typeclass'
+import {Array, flow, Function, HKT, pipe, Tuple} from 'effect'
 import {Law, LawSet} from 'effect-ts-laws'
-import {tupled} from 'effect/Function'
-import {Kind, TypeLambda} from 'effect/HKT'
 import fc from 'fast-check'
-import {Fix, fix, unfix, Unfixed} from '../fix.js'
 import {Given} from '../laws.js'
-import {fanout, traverseCovariant} from '../util.js'
-import {Catamorphism, Paramorphism, RAlgebra} from './folds.js'
-import {cata, para, zygo} from './schemes.js'
+import {
+  Catamorphism,
+  CVAlgebra,
+  Histomorphism,
+  Paramorphism,
+  RAlgebra,
+} from './folds.js'
+import {algebraToCVAlgebra, cata, histo, para, zygo} from './schemes.js'
 
-export const cataLaws = <F extends TypeLambda, A, B>(
-  F: TA.Traversable<F>,
+export const cataLaws = <F extends HKT.TypeLambda, A, B>(
+  F: Traversable.Traversable<F>,
   {equalsF, equalsA, fixed, φ}: Given<F, A, B>,
 ) => {
-  const unfixed: fc.Arbitrary<Unfixed<F>> = fixed.map(unfix),
-    cataF = cata(F)
+  const unfixed: fc.Arbitrary<Unfixed<F>> = fixed.map(unfix)
 
   return LawSet()(
     'catamorphism',
@@ -24,7 +27,7 @@ export const cataLaws = <F extends TypeLambda, A, B>(
       'identity',
       'cata(fix) = id',
       fixed,
-    )(fixed => equalsF(pipe(fixed, cataF(fix)), fixed)),
+    )(fixed => equalsF(pipe(fixed, cata(F)(fix)), fixed)),
 
     Law(
       'cancellation',
@@ -33,25 +36,25 @@ export const cataLaws = <F extends TypeLambda, A, B>(
       φ,
     )((unfixed, φ) =>
       equalsA(
-        pipe(unfixed, fix, cataF(φ)),
-        pipe(unfixed, traverseCovariant(F).map(cataF(φ)), φ),
+        pipe(unfixed, fix, cata(F)(φ)),
+        pipe(unfixed, traverseCovariant(F).map(cata(F)(φ)), φ),
       ),
     ),
 
     Law(
-      'hylo consistency',
-      'cata(φ) = hylo(unfix, φ)',
+      'standalone cata consistency',
+      'cata(φ) = standaloneCata(φ)',
       fixed,
       φ,
     )((fixed, φ) =>
-      equalsA(pipe(fixed, cataF(φ)), pipe(fixed, standaloneCata(F)(φ))),
+      equalsA(pipe(fixed, cata(F)(φ)), pipe(fixed, standaloneCata(F)(φ))),
     ),
   )
 }
 
-export const paraLaws = <F extends TypeLambda, A, B>(
-  F: TA.Traversable<F>,
-  {fixed, equalsA, φ}: Given<F, A, B>,
+export const paraLaws = <F extends HKT.TypeLambda, A, B>(
+  F: Traversable.Traversable<F>,
+  {fixed, equalsA, equalsB, φ, rAlgebra}: Given<F, A, B>,
 ) => {
   return LawSet()(
     'paramorphism',
@@ -64,12 +67,24 @@ export const paraLaws = <F extends TypeLambda, A, B>(
     )((fixed, φ) =>
       equalsA(pipe(fixed, cata(F)(φ)), pipe(fixed, paraBasedCata(F)(φ))),
     ),
+
+    Law(
+      'standalone para consistency',
+      'para(φ) = standalonePara(φ)',
+      fixed,
+      rAlgebra,
+    )((fixed, φ) =>
+      Array.getEquivalence(equalsB)(
+        pipe(fixed, para(F)(φ)),
+        pipe(fixed, standalonePara(F)(φ)),
+      ),
+    ),
   )
 }
 
-export const zygoLaws = <F extends TypeLambda, A>(
-  F: TA.Traversable<F>,
-  {fixed, equalsF, ralgebra}: Given<F, A, Fix<F>>,
+export const zygoLaws = <F extends HKT.TypeLambda, A>(
+  F: Traversable.Traversable<F>,
+  {fixed, equalsF, rAlgebra}: Given<F, A, Fix<F>>,
 ) => {
   return LawSet()(
     'zygomorphism',
@@ -78,13 +93,43 @@ export const zygoLaws = <F extends TypeLambda, A>(
       'para consistency',
       'para(φ) = zygo(φ ∘ F.map(Tuple.swap), fix)',
       fixed,
-      ralgebra,
+      rAlgebra,
     )((fixed, φ) =>
       pipe(
         fixed,
         fanout(para(F)(φ), zygoBasedPara(F)(φ)),
-        tupled(AR.getEquivalence(equalsF)),
+        Function.tupled(Array.getEquivalence(equalsF)),
       ),
+    ),
+  )
+}
+
+export const histoLaws = <F extends HKT.TypeLambda, A>(
+  F: Traversable.Traversable<F>,
+  {fixed, equalsA, cvAlgebra, φ}: Given<F, A, Fix<F>>,
+) => {
+  return LawSet()(
+    'histomorphism',
+
+    Law(
+      'standalone histo consistency',
+      'histo(φ) = standaloneHisto(φ)',
+      fixed,
+      cvAlgebra,
+    )((fixed, φ) =>
+      Array.getEquivalence(equalsA)(
+        pipe(fixed, histo(F)(φ)),
+        pipe(fixed, standaloneHisto(F)(φ)),
+      ),
+    ),
+
+    Law(
+      'cata consistency',
+      'cata(φ) = histo(φ ∘ F.map(Cofree.extract))',
+      fixed,
+      φ,
+    )((fixed, φ) =>
+      equalsA(pipe(fixed, cata(F)(φ)), pipe(fixed, histoBasedCata(F)(φ))),
     ),
   )
 }
@@ -92,14 +137,46 @@ export const zygoLaws = <F extends TypeLambda, A>(
 const standaloneCata: Catamorphism = F => φ => fixed =>
   pipe(fixed, unfix, traverseCovariant(F).map(standaloneCata(F)(φ)), φ)
 
+export const standalonePara: Paramorphism =
+  <F extends HKT.TypeLambda>(F: Traversable.Traversable<F>) =>
+  <A, E = unknown, R = unknown, I = never>(φ: RAlgebra<F, A, E, R, I>) =>
+  (fixed: Fix<F, E, R, I>) =>
+    pipe(
+      fixed,
+      unfix,
+      traverseCovariant(F).map(
+        flow(
+          square,
+          pipe(φ, standalonePara(F), Tuple.mapSecond<Fix<F, E, R, I>, A>),
+        ),
+      ),
+      φ,
+    )
+
 const paraBasedCata: Catamorphism = F => φ =>
-  para(F)(flow(traverseCovariant(F).map(TU.getSecond), φ))
+  para(F)(flow(traverseCovariant(F).map(Tuple.getSecond), φ))
+
+export const histoBasedCata: Catamorphism = F =>
+  flow(algebraToCVAlgebra(F), histo(F))
 
 export const zygoBasedPara: Paramorphism =
-  <F extends TypeLambda>(F: TA.Traversable<F>) =>
-  <A, E = unknown, R = never>(φ: RAlgebra<F, A, E, R>) =>
-    zygo(F)(
-      (fa: Kind<F, R, unknown, E, [A, Fix<F, E, R>]>) =>
-        pipe(fa, traverseCovariant(F).map(TU.swap), φ),
+  <F extends HKT.TypeLambda>(F: Traversable.Traversable<F>) =>
+  <A, E = unknown, R = unknown, I = never>(φ: RAlgebra<F, A, E, R, I>) =>
+    zygo(F)<A, Fix<F, E, R, I>, E, R, I>(
+      flow(traverseCovariant(F).map(Tuple.swap), φ),
       fix,
     )
+
+export const standaloneHisto: Histomorphism =
+  <F extends HKT.TypeLambda>(F: Traversable.Traversable<F>) =>
+  <A, E, R, I>(φ: CVAlgebra<F, A, E, R, I>) => {
+    const run = (fixed: Fix<F, E, R, I>): Cofree<F, A, E, R, I> =>
+      pipe(
+        fixed,
+        unfix<F, E, R, I>,
+        traverseCovariant(F).map(run),
+        squareMapFirst(φ),
+      )
+
+    return flow(run, extract)
+  }

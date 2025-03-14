@@ -8,6 +8,7 @@ Recursion schemes for [effect-ts](https://effect.website/).
     1. Catamorphism
     2. Paramorphism
     3. Zygomorphism
+    4. Histomorphism
 2. Unfolds
     1. Anamorphism
     2. Apomorphism

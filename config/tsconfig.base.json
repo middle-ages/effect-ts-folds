@@ -23,7 +23,7 @@
       "#unfold": ["./src/unfold.ts"],
       "#refold": ["./src/refold.ts"],
       "#fix": ["./src/fix.ts"],
-      "#law": ["./src/law.ts"],
+      "#laws": ["./src/laws.ts"],
       "#util": ["./src/util.ts"]
     }
   }

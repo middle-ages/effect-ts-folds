@@ -5,8 +5,10 @@ import {
   apo,
   cata,
   Coalgebra,
+  CVAlgebra,
   DistLeft,
   fix,
+  histo,
   hylo,
   para,
   RAlgebra,
@@ -69,13 +71,38 @@ export const unfoldUntil: RCoalgebra<ConsFLambda, [number, Cons]> = ([
 export const takeUntil: Unfold<ConsFLambda, [number, Cons]> = pair =>
   pipe(pair, consApo(unfoldUntil))
 
-export const [consCata, consAna, consHylo, consPara, consApo, consZygo] = [
+export const odds: CVAlgebra<ConsFLambda, number[]> = fa =>
+  pipe(
+    fa,
+    match(
+      () => [],
+      ([, term], value) =>
+        pipe(
+          term,
+          match(
+            () => [value],
+            ([head]) => [value, ...head],
+          ),
+        ),
+    ),
+  )
+
+export const [
+  consCata,
+  consAna,
+  consHylo,
+  consPara,
+  consApo,
+  consZygo,
+  consHisto,
+] = [
   cata(instances),
   ana(instances),
   hylo(instances),
   para(instances),
   apo(instances),
   zygo(instances),
+  histo(instances),
 ]
 
 export const [countCata, rangeAna, countRange]: [

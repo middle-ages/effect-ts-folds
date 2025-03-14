@@ -4,9 +4,9 @@ import {Array as AR, flow, Number as NU, Option as OP, pipe} from 'effect'
 export const transpose = <A>([head, ...tail]: A[][]): A[][] =>
   head === undefined
     ? []
-    : !AR.isNonEmptyArray(tail)
-      ? pipe(head, AR.map(AR.of))
-      : pipe([head, ...tail], padSuffix, transposePadded, AR.map(AR.getSomes))
+    : AR.isNonEmptyArray(tail)
+      ? pipe([head, ...tail], padSuffix, transposePadded, AR.map(AR.getSomes))
+      : pipe(head, AR.map(AR.of))
 
 const padSuffix = <A>(xss: A[][]): OP.Option<A>[][] => {
   const n = pipe([0, ...AR.map(xss, AR.length)], AR.max(NU.Order)) - 1

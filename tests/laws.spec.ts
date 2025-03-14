@@ -4,6 +4,7 @@ import {
   apoLaws,
   cataLaws,
   Given,
+  histoLaws,
   paraLaws,
   unfix,
   zygoLaws,
@@ -18,11 +19,12 @@ import {
   arbitrary as fixed,
 } from './consList/cons.js'
 import {ConsFLambda, instances, map} from './consList/consF.js'
-import {count, halves, tails} from './consList/schemes.js'
+import {count, halves, odds, tails} from './consList/schemes.js'
 
 describe('laws', () => {
   const given: Given<ConsFLambda, number, Cons> = {
     equalsA: NU.Equivalence,
+    equalsB: equalsF,
     equalsF,
     a: tinyInteger,
     fa: fc
@@ -31,12 +33,13 @@ describe('laws', () => {
     fixed,
     φ: fc.constant(count),
     ψ: fc.constant(halves),
-    ralgebra: fc.constant(tails),
+    rAlgebra: fc.constant(tails),
+    cvAlgebra: fc.constant(odds),
   }
 
   for (const lawSet of [
     ...pipe(
-      [cataLaws, paraLaws, zygoLaws],
+      [cataLaws, paraLaws, zygoLaws, histoLaws],
       AR.map(l => l(instances, given)),
     ),
 
