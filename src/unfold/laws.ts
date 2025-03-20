@@ -4,6 +4,7 @@ import {Covariant as CO, Traversable as TA} from '@effect/typeclass'
 import {Either as EI, flow, pipe} from 'effect'
 import {Law, LawSet} from 'effect-ts-laws'
 import {TypeLambda} from 'effect/HKT'
+import {hylo} from '../refold.js'
 import {ana, apo} from './schemes.js'
 import {Coalgebra, Unfold} from './unfolds.js'
 
@@ -25,6 +26,13 @@ export const anaLaws = <F extends TypeLambda, A, B>(
     Law(
       'hylo consistency',
       'ana(ψ) = hylo(ψ, fix)',
+      a,
+      ψ,
+    )((a, ψ) => equalsF(pipe(a, anaF(ψ)), pipe(a, hylo(F)(ψ, fix)))),
+
+    Law(
+      'standalone ana consistency',
+      'ana(ψ) = standaloneAna(ψ)',
       a,
       ψ,
     )((a, ψ) => equalsF(pipe(a, anaF(ψ)), pipe(a, standaloneAna(F, ψ)))),

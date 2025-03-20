@@ -20,21 +20,6 @@ export interface Unfolder<
 }
 
 /**
- * The return type of all unfolding schemes. A function of the type:
- * `(a: A) ⇒ F<E, R, I>`.
- * @category unfold
- */
-export interface Unfold<
-  F extends TypeLambda,
-  A,
-  E = unknown,
-  R = unknown,
-  I = never,
-> {
-  (a: A): Fix<F, E, R, I>
-}
-
-/**
  * A function of the type: `(a: A) ⇒ F<A, E, R, I>`.
  * @category unfold
  */
@@ -58,6 +43,21 @@ export type RCoalgebra<
   R = unknown,
   I = never,
 > = Unfolder<F, SumTypeLambda<F>, A, E, R, I>
+
+/**
+ * The return type of all unfolding schemes. A function of the type:
+ * `(a: A) ⇒ F<E, R, I>`.
+ * @category unfold
+ */
+export interface Unfold<
+  F extends TypeLambda,
+  A,
+  E = unknown,
+  R = unknown,
+  I = never,
+> {
+  (a: A): Fix<F, E, R, I>
+}
 
 export type Anamorphism = <F extends TypeLambda>(
   F: TA.Traversable<F>,

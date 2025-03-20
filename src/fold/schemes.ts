@@ -41,7 +41,7 @@ export const paraE: ParamorphismE =
   (fixed: Fix<F, E2, R2, I2>) =>
     pipe(
       fixed,
-      cataE(F)((fa: Kind<F, I2, R2, E2, [Fix<F, E2, R2, I2>, A]>) => {
+      cataE(F)((fa: Kind<F, I2, R2, E2, [typeof fixed, A]>) => {
         const [fixed, effect] = pipe(
           fa,
           fanout(flow(traverseCovariant(F).map(TU.getFirst), fix), φ),
