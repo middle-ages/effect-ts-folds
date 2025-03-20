@@ -1,4 +1,5 @@
-export * from './util/transpose.js'
-export * from './util/cont.js'
+export * from './util/Array.js'
+export type * from './util/Compose.js'
+export * from './util/Cont.js'
 export * from './util/Pair.js'
 export * from './util/Traversable.js'

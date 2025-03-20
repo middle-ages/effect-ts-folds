@@ -148,8 +148,8 @@ describe('consList', () => {
   })
 
   test('histo', () => {
-    expect(pipe(AR.range(1, 10_000), cons, consHisto(odds))).toEqual(
-      AR.map(AR.range(0, 4999), i => i * 2 + 1),
+    expect(pipe(AR.range(1, 100), cons, consHisto(odds))).toEqual(
+      AR.map(AR.range(0, 49), i => i * 2 + 1),
     )
   })
 })

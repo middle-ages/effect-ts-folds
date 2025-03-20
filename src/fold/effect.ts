@@ -1,17 +1,17 @@
 import {CofreeTypeLambda, Fix, ProductTypeLambda} from '#fix'
-import {Traversable as TA} from '@effect/typeclass'
+import {Traversable as TA, Traversable} from '@effect/typeclass'
 import {IdentityTypeLambda as Id} from '@effect/typeclass/data/Identity'
-import {Effect as EF} from 'effect'
-import {Kind, TypeLambda} from 'effect/HKT'
+import {Effect, HKT} from 'effect'
 import {DistLeft} from './folds.js'
 
+//export interface ComposeTypeLambda<F extends TypeLambda, G extends TypeLambda, R1 = unknown, O1 = never, E1 = never, R2 = R1, O2 = O1, E2 = E1> extends TypeLambda {
 /**
  * Same as `Folder` but folds into an `Effect`.
  * @category fold
  */
 export type EffectFolder<
-  Outer extends TypeLambda,
-  Inner extends TypeLambda,
+  Outer extends HKT.TypeLambda,
+  Inner extends HKT.TypeLambda,
   A,
   E1 = unknown,
   R1 = never,
@@ -19,16 +19,16 @@ export type EffectFolder<
   R2 = unknown,
   I2 = never,
 > = (
-  fa: Kind<Outer, I2, R2, E2, Kind<Inner, I2, R2, E2, A>>,
-) => EF.Effect<A, E1, R1>
+  fa: HKT.Kind<Outer, I2, R2, E2, HKT.Kind<Inner, I2, R2, E2, A>>,
+) => Effect.Effect<A, E1, R1>
 
 /**
  * Same as {@link Algebra} but folds in an effect. A function of the type:
- * `(fa: F<A, E, R, I>) ⇒ Effect<A, E, R>`
+ * `(fa: F<A, E2, R2, I2>) ⇒ Effect<A, E1, R1>`.
  * @category fold
  */
 export type EffectAlgebra<
-  F extends TypeLambda,
+  F extends HKT.TypeLambda,
   A,
   E1 = unknown,
   R1 = never,
@@ -39,11 +39,11 @@ export type EffectAlgebra<
 
 /**
  * An {@link RAlgebra} that folds into an effect. A function of the type:
- * `(fa: F<[Fix<F, E, R, I>, A], E, R, I>) ⇒ Effect<A, E, R>`
+ * `(fa: F<[Fix<F, E2, R2, I2>, A], E2, R2, I2>) ⇒ Effect<A, E1, R1>`.
  * @category fold
  */
 export type EffectRAlgebra<
-  F extends TypeLambda,
+  F extends HKT.TypeLambda,
   A,
   E1 = unknown,
   R1 = never,
@@ -54,11 +54,11 @@ export type EffectRAlgebra<
 
 /**
  * A {@link CVAlgebra} that folds into an effect. A function of the type:
- * `(fa: F<Cofree<F, A, E, R, I>, E, R, I>) ⇒ Effect<A, E, R>`.
+ * `(fa: F<Cofree<F, A, E2, R2, I2>, E2, R2, I2>) ⇒ Effect<A, E1, R1>`.
  * @category fold
  */
 export type EffectCVAlgebra<
-  F extends TypeLambda,
+  F extends HKT.TypeLambda,
   A,
   E1 = unknown,
   R1 = never,
@@ -72,36 +72,49 @@ export type EffectCVAlgebra<
  * @category fold
  */
 export type EffectFold<
-  F extends TypeLambda,
+  F extends HKT.TypeLambda,
   A,
   E1 = unknown,
   R1 = never,
   E2 = unknown,
   R2 = unknown,
   I2 = never,
-> = (fixed: Fix<F, E2, R2, I2>) => EF.Effect<A, E1, R1>
+> = (fixed: Fix<F, E2, R2, I2>) => Effect.Effect<A, E1, R1>
 
-export type CatamorphismE = <F extends TypeLambda>(
-  F: TA.Traversable<F>,
-) => <A, E1 = unknown, R1 = never, E2 = unknown, R2 = unknown, I2 = never>(
-  φ: EffectAlgebra<F, A, E1, R1, E2, R2, I2>,
-) => EffectFold<F, A, E1, R1, E2, R2, I2>
+/**
+ * Type of effectful folds with a single carrier type `A`.
+ * @folds
+ */
+export interface UnaryEffectFold<
+  T extends HKT.TypeLambda,
+  F extends HKT.TypeLambda,
+> {
+  <A, E1 = unknown, R1 = never, E2 = unknown, R2 = unknown, I2 = never>(
+    φ: EffectFolder<F, T, A, E1, R1, E2, R2, I2>,
+  ): EffectFold<F, A, E1, R1, E2, R2, I2>
+}
 
-export type ParamorphismE = <F extends TypeLambda>(
-  F: TA.Traversable<F>,
-) => <A, E1 = unknown, R1 = never, E2 = unknown, R2 = unknown, I2 = never>(
-  φ: EffectRAlgebra<F, A, E1, R1, E2, R2, I2>,
-) => EffectFold<F, A, E1, R1, E2, R2, I2>
+export interface CatamorphismE {
+  <F extends HKT.TypeLambda>(
+    F: Traversable.Traversable<F>,
+  ): UnaryEffectFold<Id, F>
+}
 
-export type ZygomorphismE = <F extends TypeLambda>(
+export interface ParamorphismE {
+  <F extends HKT.TypeLambda>(
+    F: Traversable.Traversable<F>,
+  ): UnaryEffectFold<ProductTypeLambda<F>, F>
+}
+
+export interface HistomorphismE {
+  <F extends HKT.TypeLambda>(
+    F: Traversable.Traversable<F>,
+  ): UnaryEffectFold<CofreeTypeLambda<F>, F>
+}
+
+export type ZygomorphismE = <F extends HKT.TypeLambda>(
   F: TA.Traversable<F>,
 ) => <A, B, E1 = unknown, R1 = never, E2 = unknown, R2 = unknown, I2 = never>(
   f: DistLeft<F, A, B, E2, R2, I2>,
   φ: EffectAlgebra<F, B, E1, R1, E2, R2, I2>,
-) => EffectFold<F, A, E1, R1, E2, R2, I2>
-
-export type HistomorphismE = <F extends TypeLambda>(
-  F: TA.Traversable<F>,
-) => <A, E1 = unknown, R1 = never, E2 = unknown, R2 = unknown, I2 = never>(
-  φ: EffectCVAlgebra<F, A, E1, R1, E2, R2, I2>,
 ) => EffectFold<F, A, E1, R1, E2, R2, I2>

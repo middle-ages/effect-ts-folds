@@ -6,6 +6,7 @@ import {Law, LawSet} from 'effect-ts-laws'
 import fc from 'fast-check'
 import {Given} from '../laws.js'
 import {
+  Algebra,
   Catamorphism,
   CVAlgebra,
   Histomorphism,
@@ -156,8 +157,10 @@ export const standalonePara: Paramorphism =
 const paraBasedCata: Catamorphism = F => φ =>
   para(F)(flow(traverseCovariant(F).map(Tuple.getSecond), φ))
 
-export const histoBasedCata: Catamorphism = F =>
-  flow(algebraToCVAlgebra(F), histo(F))
+export const histoBasedCata: Catamorphism =
+  <F extends HKT.TypeLambda>(F: Traversable.Traversable<F>) =>
+  <A, E = unknown, R = unknown, I = never>(alg: Algebra<F, A, E, R, I>) =>
+    pipe(alg, algebraToCVAlgebra(F), histo(F))
 
 export const zygoBasedPara: Paramorphism =
   <F extends HKT.TypeLambda>(F: Traversable.Traversable<F>) =>
