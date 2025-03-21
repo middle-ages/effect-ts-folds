@@ -17,6 +17,11 @@ export type ExprF<A> = Data.TaggedEnum<{
   Or: {left: A; right: A}
 }>
 
+export type Value<A> = ExprF<A> & {_tag: 'Value'}
+export type Not<A> = ExprF<A> & {_tag: 'Not'}
+export type And<A> = ExprF<A> & {_tag: 'And'}
+export type Or<A> = ExprF<A> & {_tag: 'Or'}
+
 export interface ExprFLambda extends TypeLambda {
   readonly type: ExprF<this['Target']>
 }
@@ -34,20 +39,15 @@ export const {$is, $match, Value, Not, And, Or} =
   Data.taggedEnum<ExprFDefinition>()
 
 export const TrueF: Unfixed<ExprFLambda> = Value({value: true}),
-  FalseF: Unfixed<ExprFLambda> = Value({value: false}),
-  negationF = <A>(value: A): ExprF<A> => Not({value}),
+  FalseF: Unfixed<ExprFLambda> = Value({value: false})
+
+export const negationF = <A>(value: A): ExprF<A> => Not({value}),
   disjunctionF = <A>(left: A, right: A): ExprF<A> => Or({left, right}),
   conjunctionF: typeof disjunctionF = (left, right) => And({left, right})
 
-export const getValue = <A>(expr: ExprF<A> & {_tag: 'Value'}): boolean =>
-  expr.value
-
-export const getNegated = <A>(expr: ExprF<A> & {_tag: 'Not'}): A => expr.value
-
-export const getPair = <A>(expr: ExprF<A> & {_tag: 'And' | 'Or'}): [A, A] => [
-  expr.left,
-  expr.right,
-]
+export const getValue = <A>(e: Value<A>): boolean => e.value,
+  getNegated = <A>(e: Not<A>): A => e.value,
+  getPair = <A>(e: And<A> | Or<A>): [A, A] => [e.left, e.right]
 
 export const matchF =
   <A, R>(
@@ -59,10 +59,10 @@ export const matchF =
     pipe(
       expr,
       $match({
-        Value: ({value}) => onValue(value),
-        Not: ({value}) => onNot(value),
-        And: ({left, right}) => onBinary(true)(left, right),
-        Or: ({left, right}) => onBinary(false)(left, right),
+        Value: ({value}: Value<A>) => onValue(value),
+        Not: ({value}: Not<A>) => onNot(value),
+        And: ({left, right}: And<A>) => onBinary(true)(left, right),
+        Or: ({left, right}: Or<A>) => onBinary(false)(left, right),
       }),
     ) as R
 
