@@ -105,7 +105,7 @@ export interface Fold<
 
 /**
  * Type of folds with a single carrier type `A`.
- * @folds
+ * @category folds
  */
 export interface UnaryFold<T extends HKT.TypeLambda, F extends HKT.TypeLambda> {
   <A, E = unknown, R = unknown, I = never>(
@@ -115,7 +115,7 @@ export interface UnaryFold<T extends HKT.TypeLambda, F extends HKT.TypeLambda> {
 
 /**
  * `Algebra ⇒ Fold`.
- * @folds
+ * @category folds
  */
 export interface Catamorphism {
   <F extends HKT.TypeLambda>(F: TA.Traversable<F>): UnaryFold<Id, F>
@@ -123,7 +123,7 @@ export interface Catamorphism {
 
 /**
  * `RAlgebra ⇒ Fold`.
- * @folds
+ * @category folds
  */
 export interface Paramorphism {
   <F extends HKT.TypeLambda>(
@@ -133,7 +133,7 @@ export interface Paramorphism {
 
 /**
  * `CVAlgebra ⇒ Fold`.
- * @folds
+ * @category folds
  */
 export interface Histomorphism {
   <F extends HKT.TypeLambda>(

@@ -83,7 +83,7 @@ export type EffectFold<
 
 /**
  * Type of effectful folds with a single carrier type `A`.
- * @folds
+ * @category folds
  */
 export interface UnaryEffectFold<
   T extends HKT.TypeLambda,

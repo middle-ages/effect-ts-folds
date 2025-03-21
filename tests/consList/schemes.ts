@@ -42,15 +42,20 @@ export const tails: RAlgebra<ConsFLambda, Cons[]> = match(
   ([fixed, conses], n) => [fix([fixed, n]), ...conses],
 )
 
-export const flip: Algebra<ConsFLambda, boolean> = match(
-  constTrue,
-  (tail, _) => !tail,
-)
+export const flip: Algebra<ConsFLambda, boolean> = (a: ConsF<boolean>) =>
+  pipe(
+    a,
+    match(constTrue, (tail, _) => !tail),
+  )
 
-export const alternateSum: DistLeft<ConsFLambda, number, boolean> = match(
-  constant(0),
-  ([previous, flag], current) => previous + (flag ? 1 : -1) * current,
-)
+export const alternateSum: DistLeft<ConsFLambda, number, boolean> = a =>
+  pipe(
+    a,
+    match(
+      constant(0),
+      ([previous, flag], current) => previous + (flag ? 1 : -1) * current,
+    ),
+  )
 
 export const unfoldUntil: RCoalgebra<ConsFLambda, [number, Cons]> = ([
   needle,
