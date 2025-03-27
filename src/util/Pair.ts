@@ -37,3 +37,5 @@ export const square = <A>(a: A): [A, A] => [a, a]
 
 export const squareMapFirst: <A, B>(f: (a: A) => B) => (o: A) => [B, A] = f =>
   flow(square, Tuple.mapFirst(f))
+
+export const pair = <A, B>(a: A, b: B): [A, B] => [a, b]
