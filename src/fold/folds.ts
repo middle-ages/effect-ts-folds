@@ -84,6 +84,7 @@ export interface AlgebraTypeLambda<F extends HKT.TypeLambda>
   >
 }
 
+/** `Kind<TupleWithTypeLambda<B>, never, unknown, unknown, A> ≡ [A, B]` */
 export interface TupleWithTypeLambda<B> extends HKT.TypeLambda {
   readonly type: [this['Target'], B]
 }
@@ -141,6 +142,10 @@ export interface Histomorphism {
   ): UnaryFold<CofreeTypeLambda<F>, F>
 }
 
+/**
+ * `[DistLift, Algebra] ⇒ Fold`.
+ * @category folds
+ */
 export interface Zygomorphism {
   <F extends HKT.TypeLambda>(
     F: TA.Traversable<F>,
