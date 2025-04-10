@@ -1,12 +1,13 @@
 {
   "$schema": "https://typedoc.org/schema.json",
   "entryPoints": [
-    "../src/index.ts",
-    "../src/fold.ts",
-    "../src/unfold.ts",
-    "../src/refold.ts",
     "../src/fix.ts",
-    "../src/laws.ts"
+    "../src/fold.ts",
+    "../src/index.ts",
+    "../src/laws.ts",
+    "../src/refold.ts",
+    "../src/unfold.ts",
+    "../src/util.ts"
   ],
   "out": "../../effect-ts-folds-docs",
   "readme": "../README.md",
