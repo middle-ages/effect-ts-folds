@@ -17,6 +17,7 @@
     "esModuleInterop": false,
     "allowSyntheticDefaultImports": false,
     "noUncheckedSideEffectImports": true,
+    "skipLibCheck": true,
 
     "paths": {
       "#fold": ["./src/fold.ts"],
