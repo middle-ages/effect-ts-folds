@@ -1,11 +1,11 @@
 import eslint from '@eslint/js'
-import {Linter} from 'eslint'
 import allRecommended from 'eslint-plugin-prettier/recommended'
 import eslintPluginUnicorn from 'eslint-plugin-unicorn'
+import {defineConfig} from 'eslint/config'
 import tseslint from 'typescript-eslint'
 
 const {languageOptions: _, ...recommended} = allRecommended
-const config = tseslint.config(
+const config = defineConfig(
   {
     ignores: ['../node_modules/*', '../.dev'],
   },
@@ -49,6 +49,6 @@ const config = tseslint.config(
       'unicorn/consistent-function-scoping': 'off',
     },
   },
-) as Linter.Config[]
+)
 
 export default config

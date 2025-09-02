@@ -1,6 +1,6 @@
 {
   "name": "effect-ts-folds",
-  "version": "1.0.26",
+  "version": "1.0.27",
   "description": "Recursion schemes for effect-ts.",
   "type": "module",
   "author": "Ran Eilam <ran@haag59.com> (https://middle-ages.github.io/)",
