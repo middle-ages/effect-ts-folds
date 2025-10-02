@@ -1,6 +1,6 @@
 {
   "name": "effect-ts-folds",
-  "version": "1.0.30",
+  "version": "1.0.31",
   "description": "Recursion schemes for effect-ts.",
   "type": "module",
   "author": "Ran Eilam <ran@haag59.com> (https://middle-ages.github.io/)",
@@ -38,27 +38,27 @@
     "@fast-check/vitest": "^0.2.2",
     "@tsconfig/node-lts": "^22.0.2",
     "@tsconfig/strictest": "^2.0.6",
-    "@types/node": "^24.5.2",
+    "@types/node": "^24.6.2",
     "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4",
-    "effect-ts-laws": "^1.3.18",
+    "effect-ts-laws": "^1.3.19",
     "eslint": "^9.36.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-unicorn": "^61.0.2",
     "fast-check": "^4.3.0",
-    "jiti": "^2.6.0",
+    "jiti": "^2.6.1",
     "madge": "^8.0.0",
     "prettier": "^3.6.2",
     "typedoc": "^0.28.13",
-    "typescript": "^5.9.2",
-    "typescript-eslint": "^8.44.1",
-    "vite": "^7.1.7",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.45.0",
+    "vite": "^7.1.8",
     "vitest": "^3.2.4"
   },
   "dependencies": {
-    "@effect/typeclass": "^0.36.0",
-    "effect": "^3.17.14"
+    "@effect/typeclass": "^0.37.0",
+    "effect": "^3.18.1"
   },
   "prettier": {
     "trailingComma": "all",
